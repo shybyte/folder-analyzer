@@ -1,9 +1,9 @@
-import {onMount} from 'solid-js';
+import { onMount } from 'solid-js';
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/wicg-file-system-access/index.d.ts
 declare global {
   interface Window {
-    showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>
+    showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
   }
 
   interface FileSystemDirectoryHandle extends FileSystemHandle {
@@ -20,7 +20,6 @@ declare global {
   }
 }
 
-
 export interface FileSystemNode {
   name: string;
   children?: FileSystemNode[];
@@ -34,14 +33,14 @@ export const FolderPicker = (props: FolderPickerProps) => {
   if (!window.showDirectoryPicker) {
     return FolderPickerOld(props);
   } else {
-    return FolderPickerNew(props)
+    return FolderPickerNew(props);
   }
 };
 
 export const FolderPickerNew = (props: FolderPickerProps) => {
   async function show() {
     const dirHandle = await window.showDirectoryPicker();
-    const tree = await readFolder(dirHandle)
+    const tree = await readFolder(dirHandle);
     props.onFolderPicked(tree);
   }
 
@@ -52,14 +51,8 @@ export const FolderPickerNew = (props: FolderPickerProps) => {
   );
 };
 
-
 async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
   const children = [];
-
-  const result: FileSystemNode = {
-    name: fileSystemDirectoryHandle.name,
-    children: []
-  }
 
   for await (const entry of fileSystemDirectoryHandle.values()) {
     if (entry.kind === 'directory') {
@@ -67,18 +60,16 @@ async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle):
       children.push(child);
     } else {
       children.push({
-        name: entry.name
+        name: entry.name,
       });
     }
   }
 
-
   return {
     children: children,
-    name: fileSystemDirectoryHandle.name
+    name: fileSystemDirectoryHandle.name,
   };
 }
-
 
 // TODO: Implement FolderPickerProps.onFolderPicked
 export const FolderPickerOld = (_props: FolderPickerProps) => {
@@ -86,7 +77,7 @@ export const FolderPickerOld = (_props: FolderPickerProps) => {
 
   onMount(() => {
     fileInput.webkitdirectory = true;
-  })
+  });
 
   function show() {
     console.log('myInput', fileInput.files);
@@ -95,7 +86,7 @@ export const FolderPickerOld = (_props: FolderPickerProps) => {
   return (
     <div>
       <label for="avatar">Choose a folder:</label>
-      <input type="file" ref={fileInput} multiple={true}/>
+      <input type="file" ref={fileInput} multiple={true} />
       <button onClick={show}>Show</button>
     </div>
   );

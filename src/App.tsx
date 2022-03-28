@@ -1,7 +1,6 @@
-import {onMount} from 'solid-js';
 import type { Component } from 'solid-js';
 import styles from './App.module.css';
-import {FileSystemNode, FolderPicker} from './components/common/FolderPicker';
+import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
 
 const App: Component = () => {
   function onFolderPicked(folder: FileSystemNode) {
