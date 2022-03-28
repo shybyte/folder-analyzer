@@ -26,7 +26,7 @@ export interface FileSystemNode {
 }
 
 interface FolderPickerProps {
-  onFolderPicked(fileSystemNodes: FileSystemNode): void;
+  onFolderPicked(folder: FileSystemNode): void;
 }
 
 export const FolderPicker = (props: FolderPickerProps) => {
@@ -40,7 +40,9 @@ export const FolderPicker = (props: FolderPickerProps) => {
 export const FolderPickerNew = (props: FolderPickerProps) => {
   async function show() {
     const dirHandle = await window.showDirectoryPicker();
+    console.time('readFolder');
     const tree = await readFolder(dirHandle);
+    console.timeEnd('readFolder');
     props.onFolderPicked(tree);
   }
 
@@ -53,17 +55,23 @@ export const FolderPickerNew = (props: FolderPickerProps) => {
 
 async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
   const children = [];
+  const promises = [];
 
   for await (const entry of fileSystemDirectoryHandle.values()) {
     if (entry.kind === 'directory') {
-      const child = await readFolder(entry);
-      children.push(child);
+      promises.push(
+        readFolder(entry).then((child) => {
+          children.push(child);
+        }),
+      );
     } else {
       children.push({
         name: entry.name,
       });
     }
   }
+
+  await Promise.all(promises);
 
   return {
     children: children,
