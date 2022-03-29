@@ -1,7 +1,13 @@
 {
-  "name": "vite-template-solid",
+  "name": "folder-analyzer",
   "version": "0.0.0",
   "description": "",
+  "authors": [
+    {
+      "name": "Marco Stahl"
+    }
+  ],
+  "license": "GNU Affero General Public License v3.0",
   "scripts": {
     "start": "vite",
     "dev": "vite",
