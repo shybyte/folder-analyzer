@@ -19,7 +19,6 @@
     "cypress:open-ct": "cypress open-ct",
     "cypress:run-ct": "cypress run-ct"
   },
-  "license": "MIT",
   "devDependencies": {
     "@cypress/mount-utils": "^1.0.2",
     "@cypress/vite-dev-server": "^2.2.2",
