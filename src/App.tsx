@@ -9,7 +9,7 @@ const App: Component = () => {
 
   return (
     <div class={styles.App}>
-      <FolderPicker onFolderPicked={onFolderPicked}></FolderPicker>
+      <FolderPicker onFolderPicked={onFolderPicked}/>
     </div>
   );
 };
