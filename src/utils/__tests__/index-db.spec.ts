@@ -28,4 +28,15 @@ describe('SimpleIndexDB', () => {
     await simpleIndexDB.set('23', savedObject);
     expect(await simpleIndexDB.get('23')).to.deep.equal(savedObject);
   });
+
+  it('update objects', async () => {
+    const key = '23';
+    const savedObject1 = { myValue: 42 };
+    await simpleIndexDB.set(key, savedObject1);
+    expect(await simpleIndexDB.get(key)).to.deep.equal(savedObject1);
+
+    const savedObject2 = { myValue: 64 };
+    await simpleIndexDB.set(key, savedObject2);
+    expect(await simpleIndexDB.get(key)).to.deep.equal(savedObject2);
+  });
 });

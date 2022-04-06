@@ -43,11 +43,14 @@ export class SimpleIndexDB {
 
   async set<T>(key: string, value: T): Promise<void> {
     const transaction = this.db.transaction([STORE_NAME], 'readwrite');
-    const request = transaction.objectStore(STORE_NAME).add(value, key);
+    const request = transaction.objectStore(STORE_NAME).put(value, key);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       request.onsuccess = () => {
         resolve();
+      };
+      request.onerror = (error) => {
+        reject(error);
       };
     });
   }
