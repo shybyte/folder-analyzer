@@ -1,0 +1,34 @@
+.folderNestedListView {
+  padding: 10px 0;
+}
+
+.folderNestedListView ul {
+  margin: 0;
+  padding: 0 0 0 1.2em;
+}
+
+.folderNestedListView li {
+  list-style: none;
+  margin: 0.3em 0;
+}
+
+.folder {
+  cursor: pointer;
+  user-select: none;
+}
+
+.folder[aria-expanded='true']:before {
+  content: '\25B6';
+  display: inline-block;
+  margin-right: 0.4em;
+  transform: rotate(90deg);
+  transition: all 0.2s;
+}
+
+.folder[aria-expanded='false']:before {
+  content: '\25B6';
+  display: inline-block;
+  margin-right: 0.4em;
+  transform: rotate(0deg);
+  transition: all 0.2s;
+}

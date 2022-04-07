@@ -1,9 +1,46 @@
+import { createSignal, For, Show } from 'solid-js';
 import { FileSystemNode } from './common/FolderPicker';
+import styles from './FolderNestedListView.module.css';
 
 interface FolderNestedListViewProps {
   root: FileSystemNode;
 }
 
 export function FolderNestedListView(props: FolderNestedListViewProps) {
-  return <pre>{JSON.stringify(props.root, null, 2)}</pre>;
+  return (
+    <div class={styles.folderNestedListView}>
+      <NodeView node={props.root} open={true} />
+    </div>
+  );
+}
+
+interface NodeViewProps {
+  node: FileSystemNode;
+  open?: boolean;
+}
+
+export function NodeView(props: NodeViewProps) {
+  const [isOpen, setOpen] = createSignal(props.open ?? false);
+  return (
+    <>
+      <div
+        classList={{ [styles.folder]: !!props.node.children }}
+        aria-expanded={isOpen()}
+        onClick={() => setOpen(!isOpen())}
+      >
+        {props.node.name}
+      </div>
+      <Show when={props.node.children && isOpen()}>
+        <ul>
+          <For each={props.node.children}>
+            {(childNode, i) => (
+              <li>
+                <NodeView node={childNode}></NodeView>
+              </li>
+            )}
+          </For>
+        </ul>
+      </Show>
+    </>
+  );
 }
