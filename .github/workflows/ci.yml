@@ -24,3 +24,9 @@ jobs:
         with:
           install: false
           command: pnpm cypress:run-ct
+
+      - name: Archive cypress test videos
+          uses: actions/upload-artifact@v3
+          with:
+            name: cypress-test-videos
+            path: cypress/videos
