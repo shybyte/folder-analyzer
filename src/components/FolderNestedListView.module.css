@@ -10,6 +10,8 @@
 .folderNestedListView li {
   list-style: none;
   margin: 0.3em 0;
+  cursor: pointer;
+  user-select: none;
 }
 
 .folder {
