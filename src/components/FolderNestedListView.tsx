@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from 'solid-js';
 import { FileSystemNode } from './common/FolderPicker';
 import styles from './FolderNestedListView.module.css';
+import { sortRecursivelyByName } from '../utils/tree';
 
 interface FolderNestedListViewProps {
   root: FileSystemNode;
@@ -9,7 +10,7 @@ interface FolderNestedListViewProps {
 export function FolderNestedListView(props: FolderNestedListViewProps) {
   return (
     <div class={styles.folderNestedListView}>
-      <NodeView node={props.root} open={true} />
+      <NodeView node={sortRecursivelyByName(props.root)} open={true} />
     </div>
   );
 }
