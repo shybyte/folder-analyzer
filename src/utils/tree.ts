@@ -1,7 +1,15 @@
 import { FileSystemNode } from '../components/common/FolderPicker';
 
-export function sortRecursivelyByName(tree: FileSystemNode): FileSystemNode {
-  return sortRecursively(tree, (a, b) => a.name.localeCompare(b.name));
+export function sortRecursivelyByNameButFolderFirst(tree: FileSystemNode): FileSystemNode {
+  return sortRecursively(tree, (a, b) => {
+    if (a.children && !b.children) {
+      return -1;
+    } else if (!a.children && b.children) {
+      return 1;
+    } else {
+      return a.name.localeCompare(b.name);
+    }
+  });
 }
 
 export function sortRecursively(

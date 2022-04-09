@@ -1,8 +1,8 @@
 import { FileSystemNode } from '../../components/common/FolderPicker';
-import { sortRecursivelyByName } from '../tree';
+import { sortRecursivelyByNameButFolderFirst } from '../tree';
 
 describe('tree', () => {
-  it('sortRecursivelyByName', () => {
+  it('sortRecursivelyByNameButFolderFirst', () => {
     const tree: FileSystemNode = {
       name: 'root',
       children: [
@@ -26,9 +26,17 @@ describe('tree', () => {
         {
           name: 'bundy',
         },
+        {
+          name: 'folder-first',
+          children: [
+            {
+              name: 'file',
+            },
+          ],
+        },
       ],
     };
-    const sorted = sortRecursivelyByName(tree);
+    const sorted = sortRecursivelyByNameButFolderFirst(tree);
     expect(sorted).to.deep.equal({
       name: 'root',
       children: [
@@ -43,6 +51,14 @@ describe('tree', () => {
             },
             {
               name: 'c',
+            },
+          ],
+        },
+        {
+          name: 'folder-first',
+          children: [
+            {
+              name: 'file',
             },
           ],
         },
