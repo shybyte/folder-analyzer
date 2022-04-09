@@ -8,9 +8,10 @@ interface FolderNestedListViewProps {
 }
 
 export function FolderNestedListView(props: FolderNestedListViewProps) {
+  const sortedTree = sortRecursivelyByNameButFolderFirst(props.root);
   return (
     <div class={styles.folderNestedListView}>
-      <NodeView node={sortRecursivelyByNameButFolderFirst(props.root)} open={true} />
+      <NodeView node={sortedTree} open={true} />
     </div>
   );
 }
