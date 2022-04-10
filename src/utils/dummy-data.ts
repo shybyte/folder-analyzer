@@ -7,7 +7,7 @@ export function createDummyFolderTree(name: string, childrenNumber: number, dept
   const children: FileSystemNode[] = [];
   if (depth > 0) {
     for (let i = 0; i < childrenNumber; i++) {
-      children.push(createDummyFolderTree(createRandomString(10) + i, childrenNumber, depth - 1));
+      children.push(createDummyFolderTree(createRandomString(10), childrenNumber, depth - 1));
     }
   }
   return { name, children };

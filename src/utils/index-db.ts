@@ -34,7 +34,7 @@ export class SimpleIndexDB {
 
     return new Promise((resolve) => {
       request.onsuccess = () => {
-        resolve(request.result);
+        resolve(request.result as T | undefined);
       };
     });
   }
