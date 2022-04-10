@@ -4,13 +4,11 @@ export class SimpleIndexDB {
   static create(name: string): Promise<SimpleIndexDB> {
     return new Promise((resolve) => {
       const request = window.indexedDB.open(name);
-      request.onsuccess = (ev) => {
-        const db: IDBDatabase = (ev.target as any).result;
-        resolve(new SimpleIndexDB(db));
+      request.onsuccess = () => {
+        resolve(new SimpleIndexDB(request.result));
       };
-      request.onupgradeneeded = (event) => {
-        const db: IDBDatabase = (event.target as any).result;
-        db.createObjectStore(STORE_NAME);
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore(STORE_NAME);
       };
     });
   }
