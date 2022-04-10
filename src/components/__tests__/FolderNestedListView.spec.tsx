@@ -5,7 +5,8 @@ import { createDummyFolderTree } from '../../utils/dummy-data';
 
 describe('FolderNestedListView', () => {
   it('renders within acceptable time', () => {
-    const tree = createDummyFolderTree('root', 10, 4);
+    // 88741 nodes
+    const tree = createDummyFolderTree('root', 17, 4);
     const rootElement = document.getElementById(ROOT_ID)!;
     performance.mark('beforeRender');
     render(() => <FolderNestedListView root={tree} />, rootElement);

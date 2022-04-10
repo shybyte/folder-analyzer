@@ -4,6 +4,7 @@ import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
 import { createEffect, createResource, createSignal } from 'solid-js';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { SimpleIndexDB } from './utils/index-db';
+import { countNodes } from './utils/tree';
 
 const ROOT_FOLDER_DB_KEY = 'rootFolder';
 
@@ -37,6 +38,7 @@ const App: Component = () => {
       console.timeEnd('loadDataFromIndexDB');
       if (savedRootFolder) {
         console.log('savedRootFolder:', savedRootFolder);
+        console.log('countNodes(savedRootFolder):', countNodes(savedRootFolder));
         console.time('renderJSX');
         setRootFolder(savedRootFolder);
         console.timeEnd('renderJSX');

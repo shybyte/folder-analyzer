@@ -20,6 +20,7 @@
     "cypress:run-ct": "cypress run-ct"
   },
   "devDependencies": {
+    "@thi.ng/bench": "^3.1.5",
     "@cypress/mount-utils": "^1.0.2",
     "@cypress/vite-dev-server": "^2.2.2",
     "cypress": "^9.5.3",
