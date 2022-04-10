@@ -15,7 +15,7 @@ describe('FolderNestedListView', () => {
       .then(() => {
         performance.mark('afterRender');
         performance.measure('renderDuration', 'beforeRender', 'afterRender');
-        const measure = performance.getEntriesByName('renderDuration')[0];
+        const measure = performance.getEntriesByName('renderDuration')[0]!;
         assert.isAtMost(measure.duration, 100);
         console.log('measure.duration:', measure.duration);
         cy.log(`[PERFORMANCE] Render Time for FolderNestedListView: ${measure.duration} ms`);

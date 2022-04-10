@@ -51,7 +51,7 @@ const App: Component = () => {
   });
 
   return (
-    <div class={styles.App}>
+    <div class={styles['App']!}>
       <FolderPicker onFolderPicked={onFolderPicked} />
       <Show when={rootFolder()}>
         <FolderNestedListView root={rootFolder()!} />

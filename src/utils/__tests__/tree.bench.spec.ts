@@ -1,4 +1,4 @@
-import { countNodes, sortRecursivelyByNameButFolderFirst } from '../tree';
+import { sortRecursivelyByNameButFolderFirst } from '../tree';
 import { benchmark } from '@thi.ng/bench';
 import { createDummyFolderTree } from '../dummy-data';
 

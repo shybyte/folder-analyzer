@@ -13,6 +13,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "tsc": "tsc",
     "format": "prettier --write src",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
