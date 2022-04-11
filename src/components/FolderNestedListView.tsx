@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { FileSystemNode } from './common/FolderPicker';
-import styles from './FolderNestedListView.module.css';
+import styles from './FolderNestedListView.module.scss';
 import { compareNodesByNameButFolderFirst } from '../utils/tree';
 import { sortByCompare } from '../utils/array';
 
@@ -10,7 +10,7 @@ interface FolderNestedListViewProps {
 
 export function FolderNestedListView(props: FolderNestedListViewProps) {
   return (
-    <div class={styles['folderNestedListView']!}>
+    <div class={styles.folderNestedListView}>
       <NodeView node={props.root} open={true} />
     </div>
   );
@@ -26,7 +26,7 @@ export function NodeView(props: NodeViewProps) {
   return (
     <>
       <div
-        classList={{ [styles['folder']!]: !!props.node.children }}
+        classList={{ [styles.folder]: !!props.node.children }}
         aria-expanded={isOpen()}
         onClick={() => setOpen(!isOpen())}
       >

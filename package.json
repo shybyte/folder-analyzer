@@ -11,6 +11,8 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
+    "typed-scss-modules": "typed-scss-modules src",
+    "typed-scss-modules:watch": "typed-scss-modules -w src",
     "build": "vite build",
     "serve": "vite preview",
     "tsc": "tsc",
@@ -33,6 +35,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-sonarjs": "^0.13.0",
     "prettier": "^2.6.1",
+    "sass": "^1.50.0",
+    "typed-scss-modules": "^6.2.0",
     "typescript": "^4.6.3",
     "vite": "^2.8.6",
     "vite-plugin-solid": "^2.2.6"

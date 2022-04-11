@@ -1,5 +1,5 @@
 import { Component, Show } from 'solid-js';
-import styles from './App.module.css';
+import styles from './App.module.scss';
 import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
 import { createEffect, createResource, createSignal } from 'solid-js';
 import { FolderNestedListView } from './components/FolderNestedListView';
@@ -51,7 +51,8 @@ const App: Component = () => {
   });
 
   return (
-    <div class={styles['App']!}>
+    <div class={styles.app}>
+      <b>Test</b>
       <FolderPicker onFolderPicked={onFolderPicked} />
       <Show when={rootFolder()}>
         <FolderNestedListView root={rootFolder()!} />
