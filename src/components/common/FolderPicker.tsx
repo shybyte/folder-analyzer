@@ -48,7 +48,15 @@ export const FolderPickerNew = (props: FolderPickerProps) => {
 
   return (
     <div>
-      <button onClick={show}>Select Folder</button>
+      <button
+        onClick={() => {
+          show().catch((error) => {
+            console.error('Error while reading folder', error);
+          });
+        }}
+      >
+        Select Folder
+      </button>
     </div>
   );
 };

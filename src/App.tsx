@@ -14,7 +14,11 @@ const App: Component = () => {
 
   function onFolderPicked(folder: FileSystemNode) {
     console.log('folder', folder);
-    getDb()!.set(ROOT_FOLDER_DB_KEY, folder);
+    getDb()!
+      .set(ROOT_FOLDER_DB_KEY, folder)
+      .catch((error) => {
+        console.error('Error while storing folder into IndexDB', error);
+      });
     setRootFolder(folder);
   }
 

@@ -16,5 +16,7 @@ module.exports = {
   ],
   rules: {
     'import/no-cycle': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
 };

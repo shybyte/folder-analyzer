@@ -16,7 +16,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "tsc": "tsc",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write src",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
