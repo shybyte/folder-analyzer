@@ -5,6 +5,7 @@ import { createEffect, createResource, createSignal } from 'solid-js';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { SimpleIndexDB } from './utils/index-db';
 import { countNodes } from './utils/tree';
+import { PerformanceMetricDataPoint } from './utils/performance';
 
 const ROOT_FOLDER_DB_KEY = 'rootFolder';
 
@@ -43,12 +44,16 @@ const App: Component = () => {
       if (savedRootFolder) {
         console.log('savedRootFolder:', savedRootFolder);
         console.log('countNodes(savedRootFolder):', countNodes(savedRootFolder));
-        console.time('renderJSX');
+
+        const renderLayoutMetric = PerformanceMetricDataPoint.start('render-layout-app');
+        const renderMetric = PerformanceMetricDataPoint.start('render-app');
         setRootFolder(savedRootFolder);
-        console.timeEnd('renderJSX');
-        console.time('layout1');
+        renderMetric.end();
+
+        const layoutMetric = PerformanceMetricDataPoint.start('layout-app');
         setTimeout(() => {
-          console.timeEnd('layout1');
+          layoutMetric.end();
+          renderLayoutMetric.end();
         }, 0);
       }
     }
