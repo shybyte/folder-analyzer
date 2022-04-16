@@ -1,15 +1,16 @@
-import { Component, Show } from 'solid-js';
+import { Component, createEffect, createResource, createSignal, Show } from 'solid-js';
 import styles from './App.module.scss';
 import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
-import { createEffect, createResource, createSignal } from 'solid-js';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { SimpleIndexDB } from './utils/index-db';
 import { countNodes } from './utils/tree';
-import { PerformanceMetricDataPoint } from './utils/performance';
+import { recordMetric, sendMetricIfConfigured } from './utils/performance';
 
 const ROOT_FOLDER_DB_KEY = 'rootFolder';
 
 const App: Component = () => {
+  sendMetricIfConfigured('load-app', performance.now());
+  recordMetric('prepare-data-loading');
   const [getDb] = createResource(async () => SimpleIndexDB.create('folder-analyzer'));
   const [rootFolder, setRootFolder] = createSignal<FileSystemNode>();
 
@@ -38,23 +39,22 @@ const App: Component = () => {
   createEffect(async () => {
     const db = getDb();
     if (db) {
-      console.time('loadDataFromIndexDB');
+      recordMetric('load-data-from-index-db');
       const savedRootFolder = await db.get<FileSystemNode>(ROOT_FOLDER_DB_KEY);
-      console.timeEnd('loadDataFromIndexDB');
       if (savedRootFolder) {
         console.log('savedRootFolder:', savedRootFolder);
+        recordMetric('count-nodes');
         console.log('countNodes(savedRootFolder):', countNodes(savedRootFolder));
 
-        const renderLayoutMetric = PerformanceMetricDataPoint.start('render-layout-app');
-        const renderMetric = PerformanceMetricDataPoint.start('render-app');
+        recordMetric('render-app');
         setRootFolder(savedRootFolder);
-        renderMetric.end();
 
-        const layoutMetric = PerformanceMetricDataPoint.start('layout-app');
+        recordMetric('layout-app');
         setTimeout(() => {
-          layoutMetric.end();
-          renderLayoutMetric.end();
+          recordMetric();
         }, 0);
+      } else {
+        recordMetric();
       }
     }
   });

@@ -11,19 +11,32 @@ export class PerformanceMetricDataPoint {
   end(): number {
     console.timeEnd(this.name);
     const duration = performance.now() - this.startTime;
-
-    if (metricServiceOrigin) {
-      fetch('http://localhost:8080/api/metric', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: this.name, value: duration, origin: metricServiceOrigin }),
-      }).catch((err) => {
-        console.error(err);
-      });
-    }
-
+    sendMetricIfConfigured(this.name, duration);
     return duration;
+  }
+}
+
+let currentMetric: PerformanceMetricDataPoint;
+
+export function recordMetric(newMetric?: string) {
+  if (currentMetric) {
+    currentMetric.end();
+  }
+  if (newMetric) {
+    currentMetric = PerformanceMetricDataPoint.start(newMetric);
+  }
+}
+
+export function sendMetricIfConfigured(name: string, value: number) {
+  if (metricServiceOrigin) {
+    fetch('http://localhost:8080/api/metric', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: name, value: value, origin: metricServiceOrigin }),
+    }).catch((err) => {
+      console.error(err);
+    });
   }
 }
