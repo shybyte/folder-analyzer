@@ -3,10 +3,10 @@ import styles from './App.module.scss';
 import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { SimpleIndexDB } from './utils/index-db';
-import { countNodes } from './utils/tree';
 import { recordMetric, sendMetricIfConfigured } from './utils/performance';
+import { convertTreeNodeToFb, readFlat, TreeNodeProxy } from './tree/tree-node-fb-utils';
 
-const ROOT_FOLDER_DB_KEY = 'rootFolder';
+const ROOT_FOLDER_FB_DB_KEY = 'rootFolderFb';
 
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
@@ -16,11 +16,10 @@ const App: Component = () => {
 
   function onFolderPicked(folder: FileSystemNode) {
     console.log('folder', folder);
-    getDb()!
-      .set(ROOT_FOLDER_DB_KEY, folder)
-      .catch((error) => {
-        console.error('Error while storing folder into IndexDB', error);
-      });
+    const db = getDb()!;
+    db.set(ROOT_FOLDER_FB_DB_KEY, convertTreeNodeToFb(folder)).catch((error) => {
+      console.error('Error while storing folder into IndexDB', error);
+    });
     setRootFolder(folder);
   }
 
@@ -40,11 +39,10 @@ const App: Component = () => {
     const db = getDb();
     if (db) {
       recordMetric('load-data-from-index-db');
-      const savedRootFolder = await db.get<FileSystemNode>(ROOT_FOLDER_DB_KEY);
-      if (savedRootFolder) {
-        console.log('savedRootFolder:', savedRootFolder);
-        recordMetric('count-nodes');
-        console.log('countNodes(savedRootFolder):', countNodes(savedRootFolder));
+      const savedRootFolderFbBuffer = await db.get<Uint8Array>(ROOT_FOLDER_FB_DB_KEY);
+      if (savedRootFolderFbBuffer) {
+        const treeNodeFb = readFlat(savedRootFolderFbBuffer);
+        const savedRootFolder = new TreeNodeProxy(treeNodeFb);
 
         recordMetric('render-app');
         setRootFolder(savedRootFolder);
