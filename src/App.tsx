@@ -1,10 +1,11 @@
 import { Component, createEffect, createResource, createSignal, Show } from 'solid-js';
 import styles from './App.module.scss';
-import { FileSystemNode, FolderPicker } from './components/common/FolderPicker';
+import { FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { SimpleIndexDB } from './utils/index-db';
 import { recordMetric, sendMetricIfConfigured } from './utils/performance';
 import { convertTreeNodeToFb, readFlat, TreeNodeProxy } from './tree/tree-node-fb-utils';
+import { FileSystemNode } from './types';
 
 const ROOT_FOLDER_FB_DB_KEY = 'rootFolderFb';
 

@@ -1,8 +1,8 @@
 import { createSignal, For, Show } from 'solid-js';
-import { FileSystemNode } from './common/FolderPicker';
 import styles from './FolderNestedListView.module.scss';
 import { compareNodesByNameButFolderFirst } from '../utils/tree';
 import { sortByCompare } from '../utils/array';
+import { FileSystemNode } from '../types';
 
 interface FolderNestedListViewProps {
   root: FileSystemNode;

@@ -1,4 +1,4 @@
-import { FileSystemNode } from '../components/common/FolderPicker';
+import { FileSystemNode } from '../types';
 
 const collator = new Intl.Collator();
 

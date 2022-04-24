@@ -1,4 +1,6 @@
 import { onMount } from 'solid-js';
+import { compareNodesByNameButFolderFirst } from '../../utils/tree';
+import { FileSystemNode } from '../../types';
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/wicg-file-system-access/index.d.ts
 declare global {
@@ -18,11 +20,6 @@ declare global {
     [Symbol.asyncIterator]: FileSystemDirectoryHandle['entries'];
     readonly isFile: false;
   }
-}
-
-export interface FileSystemNode {
-  name: string;
-  children?: FileSystemNode[];
 }
 
 interface FolderPickerProps {
@@ -80,6 +77,8 @@ async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle):
   }
 
   await Promise.all(promises);
+
+  children.sort(compareNodesByNameButFolderFirst);
 
   return {
     children: children,

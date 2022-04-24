@@ -1,5 +1,5 @@
-import { FileSystemNode } from '../../components/common/FolderPicker';
 import { sortRecursivelyByNameButFolderFirst } from '../tree';
+import { FileSystemNode } from '../../types';
 
 describe('tree', () => {
   it('sortRecursivelyByNameButFolderFirst', () => {

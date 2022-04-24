@@ -1,4 +1,4 @@
-import { FileSystemNode } from '../components/common/FolderPicker';
+import { FileSystemNode } from '../types';
 
 export function createDummyFolderTree(name: string, childrenNumber: number, depth: number): FileSystemNode {
   if (depth === 0) {
