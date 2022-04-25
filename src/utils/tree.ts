@@ -1,8 +1,9 @@
-import { FileSystemNode } from '../types';
+import { FileSystemNode, MinimalFileSystemNode } from '../types';
+import { Counter } from './index';
 
 const collator = new Intl.Collator();
 
-export function compareNodesByNameButFolderFirst(a: FileSystemNode, b: FileSystemNode) {
+export function compareNodesByNameButFolderFirst(a: MinimalFileSystemNode, b: MinimalFileSystemNode) {
   if (a.children && !b.children) {
     return -1;
   } else if (!a.children && b.children) {
@@ -14,14 +15,14 @@ export function compareNodesByNameButFolderFirst(a: FileSystemNode, b: FileSyste
   }
 }
 
-export function sortRecursivelyByNameButFolderFirst(tree: FileSystemNode): FileSystemNode {
+export function sortRecursivelyByNameButFolderFirst(tree: MinimalFileSystemNode): MinimalFileSystemNode {
   return sortRecursively(tree, compareNodesByNameButFolderFirst);
 }
 
 export function sortRecursively(
-  tree: FileSystemNode,
-  compare: (a: FileSystemNode, b: FileSystemNode) => number,
-): FileSystemNode {
+  tree: MinimalFileSystemNode,
+  compare: (a: MinimalFileSystemNode, b: MinimalFileSystemNode) => number,
+): MinimalFileSystemNode {
   if (!tree.children || tree.children.length === 0) {
     return tree;
   } else
@@ -46,4 +47,13 @@ export function countNodes(tree: FileSystemNode) {
     counter += 1;
   });
   return counter;
+}
+
+export function addIds(tree: MinimalFileSystemNode, idCounter = new Counter()): FileSystemNode {
+  const id = idCounter.getAndInc();
+  const result: FileSystemNode = { name: tree.name, id };
+  if (tree.children) {
+    result.children = tree.children.map((child) => addIds(child, idCounter));
+  }
+  return result;
 }

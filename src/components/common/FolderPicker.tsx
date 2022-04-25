@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
-import { compareNodesByNameButFolderFirst } from '../../utils/tree';
-import { FileSystemNode } from '../../types';
+import { addIds, compareNodesByNameButFolderFirst } from '../../utils/tree';
+import { FileSystemNode, MinimalFileSystemNode } from '../../types';
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/wicg-file-system-access/index.d.ts
 declare global {
@@ -58,7 +58,9 @@ export const FolderPickerNew = (props: FolderPickerProps) => {
   );
 };
 
-async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
+async function readFolderInternal(
+  fileSystemDirectoryHandle: FileSystemDirectoryHandle,
+): Promise<MinimalFileSystemNode> {
   const children = [];
   const promises = [];
 
@@ -84,6 +86,11 @@ async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle):
     children: children,
     name: fileSystemDirectoryHandle.name,
   };
+}
+
+async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
+  const minimalTree = await readFolderInternal(fileSystemDirectoryHandle);
+  return addIds(minimalTree);
 }
 
 // TODO: Implement FolderPickerProps.onFolderPicked

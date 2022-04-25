@@ -22,20 +22,25 @@ export class TreeNodeFb {
     return (obj || new TreeNodeFb()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
   }
 
+  id(): number {
+    const offset = this.bb!.__offset(this.bb_pos, 4);
+    return offset ? this.bb!.readUint32(this.bb_pos + offset) : 0;
+  }
+
   name(): string | null;
   name(optionalEncoding: flatbuffers.Encoding): string | Uint8Array | null;
   name(optionalEncoding?: any): string | Uint8Array | null {
-    const offset = this.bb!.__offset(this.bb_pos, 4);
+    const offset = this.bb!.__offset(this.bb_pos, 6);
     return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
   }
 
   isFolder(): boolean {
-    const offset = this.bb!.__offset(this.bb_pos, 6);
+    const offset = this.bb!.__offset(this.bb_pos, 8);
     return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
   }
 
   children(index: number, obj?: TreeNodeFb): TreeNodeFb | null {
-    const offset = this.bb!.__offset(this.bb_pos, 8);
+    const offset = this.bb!.__offset(this.bb_pos, 10);
     return offset
       ? (obj || new TreeNodeFb()).__init(
           this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4),
@@ -45,24 +50,28 @@ export class TreeNodeFb {
   }
 
   childrenLength(): number {
-    const offset = this.bb!.__offset(this.bb_pos, 8);
+    const offset = this.bb!.__offset(this.bb_pos, 10);
     return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
   }
 
   static startTreeNodeFb(builder: flatbuffers.Builder) {
-    builder.startObject(3);
+    builder.startObject(4);
+  }
+
+  static addId(builder: flatbuffers.Builder, id: number) {
+    builder.addFieldInt32(0, id, 0);
   }
 
   static addName(builder: flatbuffers.Builder, nameOffset: flatbuffers.Offset) {
-    builder.addFieldOffset(0, nameOffset, 0);
+    builder.addFieldOffset(1, nameOffset, 0);
   }
 
   static addIsFolder(builder: flatbuffers.Builder, isFolder: boolean) {
-    builder.addFieldInt8(1, +isFolder, +false);
+    builder.addFieldInt8(2, +isFolder, +false);
   }
 
   static addChildren(builder: flatbuffers.Builder, childrenOffset: flatbuffers.Offset) {
-    builder.addFieldOffset(2, childrenOffset, 0);
+    builder.addFieldOffset(3, childrenOffset, 0);
   }
 
   static createChildrenVector(builder: flatbuffers.Builder, data: flatbuffers.Offset[]): flatbuffers.Offset {
@@ -92,11 +101,13 @@ export class TreeNodeFb {
 
   static createTreeNodeFb(
     builder: flatbuffers.Builder,
+    id: number,
     nameOffset: flatbuffers.Offset,
     isFolder: boolean,
     childrenOffset: flatbuffers.Offset,
   ): flatbuffers.Offset {
     TreeNodeFb.startTreeNodeFb(builder);
+    TreeNodeFb.addId(builder, id);
     TreeNodeFb.addName(builder, nameOffset);
     TreeNodeFb.addIsFolder(builder, isFolder);
     TreeNodeFb.addChildren(builder, childrenOffset);

@@ -1,9 +1,9 @@
 import { sortRecursivelyByNameButFolderFirst } from '../tree';
-import { FileSystemNode } from '../../types';
+import { MinimalFileSystemNode } from '../../types';
 
 describe('tree', () => {
   it('sortRecursivelyByNameButFolderFirst', () => {
-    const tree: FileSystemNode = {
+    const tree: MinimalFileSystemNode = {
       name: 'root',
       children: [
         {

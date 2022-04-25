@@ -1,6 +1,7 @@
 // Flatbuffers IDL file for our schema.
 
 table TreeNodeFb {
+  id: uint;
   name: string;
   is_folder: bool;
   children: [TreeNodeFb];

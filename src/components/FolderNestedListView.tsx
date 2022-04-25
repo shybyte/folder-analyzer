@@ -30,7 +30,7 @@ export function NodeView(props: NodeViewProps) {
         aria-expanded={isOpen()}
         onClick={() => setOpen(!isOpen())}
       >
-        {props.node.name}
+        {props.node.name} ({props.node.id})
       </div>
       <Show when={props.node.children && isOpen()}>
         <ul>

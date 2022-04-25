@@ -2,11 +2,12 @@ import { ROOT_ID } from '@cypress/mount-utils';
 import { render } from 'solid-js/web';
 import { FolderNestedListView } from '../FolderNestedListView';
 import { createDummyFolderTree } from '../../utils/dummy-data';
+import { Counter } from '../../utils';
 
 describe('FolderNestedListView', () => {
   it('renders within acceptable time', () => {
     // 88741 nodes
-    const tree = createDummyFolderTree('root', 17, 4);
+    const tree = createDummyFolderTree('root', 17, 4, new Counter());
     const rootElement = document.getElementById(ROOT_ID)!;
     performance.mark('beforeRender');
     render(() => <FolderNestedListView root={tree} />, rootElement);

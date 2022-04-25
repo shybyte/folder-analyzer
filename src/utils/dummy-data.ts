@@ -1,16 +1,23 @@
 import { FileSystemNode } from '../types';
+import { Counter } from './index';
 
-export function createDummyFolderTree(name: string, childrenNumber: number, depth: number): FileSystemNode {
+export function createDummyFolderTree(
+  name: string,
+  childrenNumber: number,
+  depth: number,
+  idCounter: Counter,
+): FileSystemNode {
+  const id = idCounter.getAndInc();
   if (depth === 0) {
-    return { name };
+    return { id, name };
   }
   const children: FileSystemNode[] = [];
   if (depth > 0) {
     for (let i = 0; i < childrenNumber; i++) {
-      children.push(createDummyFolderTree(createRandomString(10), childrenNumber, depth - 1));
+      children.push(createDummyFolderTree(createRandomString(10), childrenNumber, depth - 1, idCounter));
     }
   }
-  return { name, children };
+  return { id, name, children };
 }
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
