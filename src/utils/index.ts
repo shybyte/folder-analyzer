@@ -18,7 +18,7 @@ export class Counter {
   }
 }
 
-export function omit<T>(object: T, key: keyof T): Omit<T, typeof key> {
+export function omit<T, K extends keyof T>(object: T, key: K): Omit<T, K> {
   const shallowClone = { ...object };
   delete shallowClone[key];
   return shallowClone;

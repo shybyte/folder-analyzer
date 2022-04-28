@@ -1,5 +1,5 @@
 import { FileSystemNode, MinimalFileSystemNode } from '../types';
-import { Counter } from './index';
+import { Counter, omit } from './index';
 
 const collator = new Intl.Collator();
 
@@ -50,11 +50,7 @@ export function countNodes(tree: FileSystemNode) {
 }
 
 export function addIds(tree: MinimalFileSystemNode, idCounter = new Counter()): FileSystemNode {
-  const id = idCounter.getAndInc();
-  const result: FileSystemNode = { name: tree.name, id };
-  if (tree.handle) {
-    result.handle = tree.handle;
-  }
+  const result: FileSystemNode = { ...omit(tree, 'children'), id: idCounter.getAndInc() };
   if (tree.children) {
     result.children = tree.children.map((child) => addIds(child, idCounter));
   }

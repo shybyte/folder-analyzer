@@ -8,6 +8,7 @@ import { convertTreeNodeToFb, readFlat, TreeNodeProxy } from './tree/tree-node-f
 import { FileSystemNode } from './types';
 import { analyzeMetrics } from './metrics/analyze-metrics';
 import { FileSizeMetricAnalyzer } from './metrics/file-size-metric-analyzer';
+import { FolderMetricsAnalysis } from './metrics/types';
 
 const ROOT_FOLDER_FB_DB_KEY = 'rootFolderFb';
 
@@ -16,6 +17,7 @@ const App: Component = () => {
   recordMetric('prepare-data-loading');
   const [getDb] = createResource(async () => SimpleIndexDB.create('folder-analyzer'));
   const [rootFolder, setRootFolder] = createSignal<FileSystemNode>();
+  const [metricsAnalysis, setMetricsAnalysis] = createSignal<FolderMetricsAnalysis>({});
 
   const analyzers = [new FileSizeMetricAnalyzer()];
 
@@ -30,6 +32,7 @@ const App: Component = () => {
       console.error('Error while storing folder into IndexDB', error);
     });
     setRootFolder(folder);
+    setMetricsAnalysis(analysis);
   }
 
   document.body.addEventListener('compositionend', () => {
@@ -75,7 +78,7 @@ const App: Component = () => {
         }}
       />
       <Show when={rootFolder()}>
-        <FolderNestedListView root={rootFolder()!} />
+        <FolderNestedListView root={rootFolder()!} metrics={metricsAnalysis()} />
       </Show>
     </div>
   );

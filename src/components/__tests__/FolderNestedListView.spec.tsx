@@ -10,7 +10,7 @@ describe('FolderNestedListView', () => {
     const tree = createDummyFolderTree('root', 17, 4, new Counter());
     const rootElement = document.getElementById(ROOT_ID)!;
     performance.mark('beforeRender');
-    render(() => <FolderNestedListView root={tree} />, rootElement);
+    render(() => <FolderNestedListView root={tree} metrics={{}} />, rootElement);
     cy.get('ul')
       .should('exist')
       .then(() => {
