@@ -52,6 +52,9 @@ export function countNodes(tree: FileSystemNode) {
 export function addIds(tree: MinimalFileSystemNode, idCounter = new Counter()): FileSystemNode {
   const id = idCounter.getAndInc();
   const result: FileSystemNode = { name: tree.name, id };
+  if (tree.handle) {
+    result.handle = tree.handle;
+  }
   if (tree.children) {
     result.children = tree.children.map((child) => addIds(child, idCounter));
   }

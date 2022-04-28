@@ -73,6 +73,7 @@ async function readFolderInternal(
       );
     } else {
       children.push({
+        handle: entry,
         name: entry.name,
       });
     }
@@ -84,6 +85,7 @@ async function readFolderInternal(
 
   return {
     children: children,
+    handle: fileSystemDirectoryHandle,
     name: fileSystemDirectoryHandle.name,
   };
 }
