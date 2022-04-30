@@ -46,18 +46,6 @@ const App: Component = () => {
     }
   }
 
-  document.body.addEventListener('compositionend', () => {
-    console.log('compositionend');
-  });
-
-  function animLoop() {
-    requestAnimationFrame(() => {
-      animLoop();
-    });
-  }
-
-  animLoop();
-
   createEffect(async () => {
     recordMetric('load-data-from-index-db');
     const restoredData = await readData();

@@ -17,6 +17,11 @@ module.exports = {
   rules: {
     complexity: ['error', 7],
     'max-lines': ['error', 100],
+    'max-lines-per-function': ['error', 80],
+    'max-statements': ['error', 13],
+    'max-params': ['error', 4],
+    'max-nested-callbacks': ['error', 3],
+    'max-depth': ['error', 2],
     'import/no-cycle': 'error',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
