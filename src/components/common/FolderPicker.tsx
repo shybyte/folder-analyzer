@@ -90,7 +90,7 @@ async function readFolderInternal(
   };
 }
 
-async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
+export async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
   const minimalTree = await readFolderInternal(fileSystemDirectoryHandle);
   return addIds(minimalTree);
 }
