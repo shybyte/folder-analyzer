@@ -1,4 +1,3 @@
-import { onMount } from 'solid-js';
 import { addIds, compareNodesByNameButFolderFirst } from '../../utils/tree';
 import { FileSystemNode, MinimalFileSystemNode } from '../../types';
 
@@ -28,7 +27,7 @@ interface FolderPickerProps {
 
 export const FolderPicker = (props: FolderPickerProps) => {
   if (!window.showDirectoryPicker) {
-    return FolderPickerOld(props);
+    return <div>Your Browser is currently not supported. Please use a Chromium based browser for now. </div>;
   } else {
     return FolderPickerNew(props);
   }
@@ -94,24 +93,3 @@ export async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryH
   const minimalTree = await readFolderInternal(fileSystemDirectoryHandle);
   return addIds(minimalTree);
 }
-
-// TODO: Implement FolderPickerProps.onFolderPicked
-export const FolderPickerOld = (_props: FolderPickerProps) => {
-  let fileInput!: HTMLInputElement;
-
-  onMount(() => {
-    fileInput.webkitdirectory = true;
-  });
-
-  function show() {
-    console.log('myInput', fileInput.files);
-  }
-
-  return (
-    <div>
-      <label for="avatar">Choose a folder:</label>
-      <input type="file" ref={fileInput} multiple={true} />
-      <button onClick={show}>Show</button>
-    </div>
-  );
-};
