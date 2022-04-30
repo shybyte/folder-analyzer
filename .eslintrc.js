@@ -15,6 +15,8 @@ module.exports = {
     'plugin:sonarjs/recommended',
   ],
   rules: {
+    complexity: ['error', 7],
+    'max-lines': ['error', 100],
     'import/no-cycle': 'error',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
