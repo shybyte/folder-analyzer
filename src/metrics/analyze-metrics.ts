@@ -1,5 +1,5 @@
-import { FileMetricAnalyzer, FolderMetricAnalysis, FolderMetricsAnalysis } from './types';
-import { FileSystemNode, FileSystemNodeWithFileHandle } from '../types';
+import { FileMetricAnalyzer, FolderMetricAnalysis, FolderMetricsAnalysis, MetricNameValuePair } from './types';
+import { FileNodeID, FileSystemNode, FileSystemNodeWithFileHandle } from '../types';
 import { forEachTreeNode } from '../utils/tree';
 import { ConcurrentQueue } from '../utils/concurrency';
 
@@ -16,12 +16,7 @@ export async function analyzeMetrics(
     for (const analyzer of analyzers) {
       const promise = concurrentQueue.addTask(async () => {
         const analysisResult = await analyzer.analyze(fileNode.handle);
-        for (const { name, value } of analysisResult) {
-          const folderMetricAnalysis: FolderMetricAnalysis =
-            result[name] ?? ({ valueByFile: {} } as FolderMetricAnalysis);
-          folderMetricAnalysis.valueByFile[fileNode.id] = value;
-          result[name] = folderMetricAnalysis;
-        }
+        addAnalysisResults(result, fileNode.id, analysisResult);
       });
       promises.push(promise);
     }
@@ -30,6 +25,18 @@ export async function analyzeMetrics(
   await Promise.all(promises);
 
   return result;
+}
+
+function addAnalysisResults(
+  result: FolderMetricsAnalysis,
+  fileNodeID: FileNodeID,
+  analysisResult: MetricNameValuePair[],
+) {
+  for (const { name, value } of analysisResult) {
+    const folderMetricAnalysis: FolderMetricAnalysis = result[name] ?? ({ valueByFile: {} } as FolderMetricAnalysis);
+    folderMetricAnalysis.valueByFile[fileNodeID] = value;
+    result[name] = folderMetricAnalysis;
+  }
 }
 
 function collectFiles(tree: FileSystemNode): FileSystemNodeWithFileHandle[] {

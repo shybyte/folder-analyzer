@@ -15,7 +15,8 @@ module.exports = {
     'plugin:sonarjs/recommended',
   ],
   rules: {
-    complexity: ['error', 7],
+    complexity: ['error', 5],
+    'sonarjs/cognitive-complexity': ['error', 5],
     'max-lines': ['error', 100],
     'max-lines-per-function': ['error', 80],
     'max-statements': ['error', 13],
