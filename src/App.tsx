@@ -1,6 +1,6 @@
 import { Component, createEffect, createSignal, Show } from 'solid-js';
 import styles from './App.module.scss';
-import { FolderPicker, readFolder } from './components/common/FolderPicker';
+import { FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/FolderNestedListView';
 import { PerformanceMetricDataPoint, recordMetric, sendMetricIfConfigured } from './utils/performance';
 import { FileSystemNode } from './types';
@@ -9,6 +9,7 @@ import { FileSizeMetricAnalyzer } from './metrics/file-size-metric-analyzer';
 import { FolderMetricsAnalysis } from './metrics/types';
 import { verifyPermission } from './utils';
 import { readData, storeData } from './db/datastore';
+import { reReadFolder } from './read-folder';
 
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
@@ -21,7 +22,6 @@ const App: Component = () => {
 
   async function onFolderPicked(folder: FileSystemNode) {
     console.log('folder', folder);
-    void storeData({ rootFolder: folder, rootFolderHandle: folder.handle as FileSystemDirectoryHandle });
     setRootFolderHandle(folder.handle as FileSystemDirectoryHandle);
     setRootFolder(folder);
     await analyze();
@@ -33,9 +33,7 @@ const App: Component = () => {
       if (rootFolder.handle) {
         await verifyPermission(rootFolder.handle);
       } else if (getRootFolderHandle()) {
-        const rootFolderHandle = getRootFolderHandle()!;
-        await verifyPermission(rootFolderHandle);
-        rootFolder = await readFolder(rootFolderHandle);
+        rootFolder = await reReadFolder(getRootFolderHandle()!);
         setRootFolder(rootFolder);
       }
       const analyzeMetricsPerformance = PerformanceMetricDataPoint.start('analyzeMetrics');
@@ -43,6 +41,11 @@ const App: Component = () => {
       analyzeMetricsPerformance.end();
       console.log('analysis:', analysis);
       setMetricsAnalysis(analysis);
+      void storeData({
+        rootFolder: rootFolder,
+        rootFolderHandle: rootFolder.handle as FileSystemDirectoryHandle,
+        rootFolderMetrics: analysis,
+      });
     }
   }
 
@@ -53,6 +56,7 @@ const App: Component = () => {
       recordMetric('render-app');
       setRootFolder(restoredData.rootFolder);
       setRootFolderHandle(restoredData.rootFolderHandle);
+      setMetricsAnalysis(restoredData.rootFolderMetrics);
       recordMetric('layout-app');
       setTimeout(() => {
         recordMetric();

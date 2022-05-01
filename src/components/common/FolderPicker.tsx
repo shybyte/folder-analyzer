@@ -1,5 +1,5 @@
-import { addIds, compareNodesByNameButFolderFirst } from '../../utils/tree';
-import { FileSystemNode, MinimalFileSystemNode } from '../../types';
+import { FileSystemNode } from '../../types';
+import { readFolder } from '../../read-folder';
 
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/wicg-file-system-access/index.d.ts
 declare global {
@@ -56,40 +56,3 @@ export const FolderPickerNew = (props: FolderPickerProps) => {
     </div>
   );
 };
-
-async function readFolderInternal(
-  fileSystemDirectoryHandle: FileSystemDirectoryHandle,
-): Promise<MinimalFileSystemNode> {
-  const children = [];
-  const promises = [];
-
-  for await (const entry of fileSystemDirectoryHandle.values()) {
-    if (entry.kind === 'directory') {
-      promises.push(
-        readFolder(entry).then((child) => {
-          children.push(child);
-        }),
-      );
-    } else {
-      children.push({
-        handle: entry,
-        name: entry.name,
-      });
-    }
-  }
-
-  await Promise.all(promises);
-
-  children.sort(compareNodesByNameButFolderFirst);
-
-  return {
-    children: children,
-    handle: fileSystemDirectoryHandle,
-    name: fileSystemDirectoryHandle.name,
-  };
-}
-
-export async function readFolder(fileSystemDirectoryHandle: FileSystemDirectoryHandle): Promise<FileSystemNode> {
-  const minimalTree = await readFolderInternal(fileSystemDirectoryHandle);
-  return addIds(minimalTree);
-}
