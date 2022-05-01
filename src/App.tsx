@@ -10,6 +10,7 @@ import { FolderMetricsAnalysis } from './metrics/types';
 import { verifyPermission } from './utils';
 import { readData, storeData } from './db/datastore';
 import { reReadFolder } from './read-folder';
+import { aggregateMetrics } from './metrics/aggregrate';
 
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
@@ -40,6 +41,7 @@ const App: Component = () => {
       const analysis = await analyzeMetrics(analyzers, rootFolder);
       analyzeMetricsPerformance.end();
       console.log('analysis:', analysis);
+      aggregateMetrics(rootFolder, analysis);
       setMetricsAnalysis(analysis);
       void storeData({
         rootFolder: rootFolder,
