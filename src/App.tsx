@@ -5,12 +5,14 @@ import { FolderNestedListView } from './components/FolderNestedListView';
 import { PerformanceMetricDataPoint, recordMetric, sendMetricIfConfigured } from './utils/performance';
 import { FileSystemNode } from './types';
 import { analyzeMetrics } from './metrics/analyze-metrics';
-import { FileSizeMetricAnalyzer } from './metrics/file-size-metric-analyzer';
-import { FolderMetricsAnalysis } from './metrics/types';
+import { FILE_SIZE_METRIC, FileSizeMetricAnalyzer } from './metrics/file-size-metric-analyzer';
+import { FolderMetricsAnalysis, MetricName } from './metrics/types';
 import { verifyPermission } from './utils';
 import { readData, storeData } from './db/datastore';
 import { reReadFolder } from './read-folder';
 import { aggregateMetrics } from './metrics/aggregrate';
+import { FileCountMetricAnalyzer } from './metrics/file-count-metric-analyzer';
+import { SimpleSelect } from './components/SimpleSelect';
 
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
@@ -18,8 +20,9 @@ const App: Component = () => {
   const [getRootFolderHandle, setRootFolderHandle] = createSignal<FileSystemDirectoryHandle>();
   const [getRootFolder, setRootFolder] = createSignal<FileSystemNode>();
   const [metricsAnalysis, setMetricsAnalysis] = createSignal<FolderMetricsAnalysis>({});
+  const [getSelectedMetric, setSelectedMetric] = createSignal<MetricName>(FILE_SIZE_METRIC);
 
-  const analyzers = [new FileSizeMetricAnalyzer()];
+  const analyzers = [new FileSizeMetricAnalyzer(), new FileCountMetricAnalyzer()];
 
   async function onFolderPicked(folder: FileSystemNode) {
     console.log('folder', folder);
@@ -83,8 +86,17 @@ const App: Component = () => {
       >
         Analyze
       </button>
+      <SimpleSelect
+        setSelectedValue={setSelectedMetric}
+        selectedValue={getSelectedMetric()}
+        values={Object.keys(metricsAnalysis())}
+      ></SimpleSelect>
       <Show when={getRootFolder()}>
-        <FolderNestedListView root={getRootFolder()!} metrics={metricsAnalysis()} />
+        <FolderNestedListView
+          root={getRootFolder()!}
+          metrics={metricsAnalysis()}
+          selectedMetric={getSelectedMetric()}
+        />
       </Show>
     </div>
   );
