@@ -31,11 +31,15 @@ export function NodeView(props: NodeViewProps) {
   return (
     <>
       <div
+        class={styles.line}
         classList={{ [styles.folder]: !!props.node.children }}
         aria-expanded={isOpen()}
         onClick={() => setOpen(!isOpen())}
       >
-        {props.node.name} ({props.node.id}) {props.metrics[props.selectedMetric]?.valueByFile[props.node.id]}
+        {props.node.name}
+        <span class={styles.metricValue}>
+          {props.metrics[props.selectedMetric]?.valueByFile[props.node.id]?.toLocaleString()}
+        </span>
       </div>
       <Show when={props.node.children && isOpen()}>
         <ul>
