@@ -28,6 +28,12 @@ interface NodeViewProps {
 
 export function NodeView(props: NodeViewProps) {
   const [isOpen, setOpen] = createSignal(props.open ?? false);
+
+  const metricValueString = () => {
+    const value = props.metrics[props.selectedMetric]?.valueByFile[props.node.id];
+    return value ? Math.round(value).toLocaleString() : '';
+  };
+
   return (
     <>
       <div
@@ -37,9 +43,7 @@ export function NodeView(props: NodeViewProps) {
         onClick={() => setOpen(!isOpen())}
       >
         {props.node.name}
-        <span class={styles.metricValue}>
-          {props.metrics[props.selectedMetric]?.valueByFile[props.node.id]?.toLocaleString()}
-        </span>
+        <span class={styles.metricValue}>{metricValueString()}</span>
       </div>
       <Show when={props.node.children && isOpen()}>
         <ul>
