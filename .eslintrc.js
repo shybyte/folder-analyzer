@@ -17,8 +17,8 @@ module.exports = {
   rules: {
     complexity: ['error', 5],
     'sonarjs/cognitive-complexity': ['error', 5],
-    'max-lines': ['error', 110],
-    'max-lines-per-function': ['error', 90],
+    'max-lines': ['error', 120],
+    'max-lines-per-function': ['error', 100],
     'max-statements': ['error', 13],
     'max-params': ['error', 4],
     'max-nested-callbacks': ['error', 3],

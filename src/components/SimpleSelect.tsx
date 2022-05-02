@@ -1,16 +1,16 @@
 import { For } from 'solid-js';
 
-interface SimpleSelectProps {
-  selectedValue: string;
-  setSelectedValue: (newValue: string) => void;
-  values: string[];
+interface SimpleSelectProps<K> {
+  selectedValue: K;
+  setSelectedValue: (newValue: K) => void;
+  values: K[];
 }
 
-export function SimpleSelect(props: SimpleSelectProps) {
+export function SimpleSelect<K extends string>(props: SimpleSelectProps<K>) {
   return (
     <select
       onChange={(val) => {
-        props.setSelectedValue(val.currentTarget.value);
+        props.setSelectedValue(val.currentTarget.value as K);
       }}
     >
       <For each={props.values}>

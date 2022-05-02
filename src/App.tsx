@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, Show } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal, Show } from 'solid-js';
 import styles from './App.module.scss';
 import { FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/FolderNestedListView';
@@ -10,7 +10,7 @@ import { FolderMetricsAnalysis, MetricName } from './metrics/types';
 import { verifyPermission } from './utils';
 import { readData, storeData } from './db/datastore';
 import { reReadFolder } from './read-folder';
-import { aggregateMetrics } from './metrics/aggregrate';
+import { aggregateMetrics, AggregationMethod } from './metrics/aggregrate';
 import { FileCountMetricAnalyzer } from './metrics/file-count-metric-analyzer';
 import { SimpleSelect } from './components/SimpleSelect';
 
@@ -21,6 +21,7 @@ const App: Component = () => {
   const [getRootFolder, setRootFolder] = createSignal<FileSystemNode>();
   const [metricsAnalysis, setMetricsAnalysis] = createSignal<FolderMetricsAnalysis>({});
   const [getSelectedMetric, setSelectedMetric] = createSignal<MetricName>(FILE_SIZE_METRIC);
+  const [getSelectedAggregationMethod, setSelectedAggregationMethod] = createSignal(AggregationMethod.Sum);
 
   const analyzers = [new FileSizeMetricAnalyzer(), new FileCountMetricAnalyzer()];
 
@@ -44,7 +45,6 @@ const App: Component = () => {
       const analysis = await analyzeMetrics(analyzers, rootFolder);
       analyzeMetricsPerformance.end();
       console.log('analysis:', analysis);
-      aggregateMetrics(rootFolder, analysis);
       setMetricsAnalysis(analysis);
       void storeData({
         rootFolder: rootFolder,
@@ -71,6 +71,11 @@ const App: Component = () => {
     }
   });
 
+  const aggregatedMetrics = createMemo((): FolderMetricsAnalysis => {
+    const rootFolder = getRootFolder();
+    return (rootFolder && aggregateMetrics(rootFolder, metricsAnalysis(), getSelectedAggregationMethod())) || {};
+  });
+
   return (
     <div class={styles.app}>
       <FolderPicker
@@ -86,15 +91,22 @@ const App: Component = () => {
       >
         Analyze
       </button>
+
       <SimpleSelect
         setSelectedValue={setSelectedMetric}
         selectedValue={getSelectedMetric()}
         values={Object.keys(metricsAnalysis())}
       ></SimpleSelect>
+      <SimpleSelect
+        setSelectedValue={setSelectedAggregationMethod}
+        selectedValue={getSelectedAggregationMethod()}
+        values={Object.values(AggregationMethod)}
+      ></SimpleSelect>
+
       <Show when={getRootFolder()}>
         <FolderNestedListView
           root={getRootFolder()!}
-          metrics={metricsAnalysis()}
+          metrics={aggregatedMetrics()}
           selectedMetric={getSelectedMetric()}
         />
       </Show>
