@@ -40,7 +40,7 @@ function createCompareBySortKey(
     return (a1, b1) => {
       const metricValue1 = metricAnalysis?.valueByFile[a1.id] ?? 0;
       const metricValue2 = metricAnalysis?.valueByFile[b1.id] ?? 0;
-      return metricValue1 - metricValue2;
+      return metricValue2 - metricValue1;
     };
   }
 }
