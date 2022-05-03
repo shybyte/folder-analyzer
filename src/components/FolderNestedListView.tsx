@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import styles from './FolderNestedListView.module.scss';
-import { compareNodesByNameButFolderFirst } from '../utils/tree';
+import { compareByName, compareNodesButFolderFirst, SortKey } from '../utils/tree';
 import { sortByCompare } from '../utils/array';
 import { FileSystemNode } from '../types';
 import { FolderMetricsAnalysis, MetricName } from '../metrics/types';
@@ -9,20 +9,47 @@ interface FolderNestedListViewProps {
   root: FileSystemNode;
   metrics: FolderMetricsAnalysis;
   selectedMetric: MetricName;
+  sortKey: SortKey;
 }
 
 export function FolderNestedListView(props: FolderNestedListViewProps) {
   return (
     <div class={styles.folderNestedListView}>
-      <NodeView node={props.root} open={true} metrics={props.metrics} selectedMetric={props.selectedMetric} />
+      <NodeView
+        node={props.root}
+        open={true}
+        metrics={props.metrics}
+        selectedMetric={props.selectedMetric}
+        sortNodes={(nodes: FileSystemNode[]) => {
+          const compareBySortKey = createCompareBySortKey(props.sortKey, props.metrics);
+          return sortByCompare(nodes, (a, b) => compareNodesButFolderFirst(compareBySortKey, a, b));
+        }}
+      />
     </div>
   );
+}
+
+function createCompareBySortKey(
+  sortKey: SortKey,
+  metrics: FolderMetricsAnalysis,
+): (a: FileSystemNode, b: FileSystemNode) => number {
+  if (sortKey === 'name') {
+    return compareByName;
+  } else {
+    const metricAnalysis = metrics[sortKey];
+    return (a1, b1) => {
+      const metricValue1 = metricAnalysis?.valueByFile[a1.id] ?? 0;
+      const metricValue2 = metricAnalysis?.valueByFile[b1.id] ?? 0;
+      return metricValue1 - metricValue2;
+    };
+  }
 }
 
 interface NodeViewProps {
   node: FileSystemNode;
   metrics: FolderMetricsAnalysis;
   selectedMetric: MetricName;
+  sortNodes: (nodes: FileSystemNode[]) => FileSystemNode[];
   open?: boolean;
 }
 
@@ -47,10 +74,15 @@ export function NodeView(props: NodeViewProps) {
       </div>
       <Show when={props.node.children && isOpen()}>
         <ul>
-          <For each={sortByCompare(props.node.children!, compareNodesByNameButFolderFirst)}>
+          <For each={props.sortNodes(props.node.children!)}>
             {(childNode) => (
               <li>
-                <NodeView node={childNode} metrics={props.metrics} selectedMetric={props.selectedMetric}></NodeView>
+                <NodeView
+                  node={childNode}
+                  metrics={props.metrics}
+                  selectedMetric={props.selectedMetric}
+                  sortNodes={props.sortNodes}
+                ></NodeView>
               </li>
             )}
           </For>

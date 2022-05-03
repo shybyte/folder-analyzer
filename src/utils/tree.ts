@@ -1,17 +1,29 @@
 import { FileSystemNode, MinimalFileSystemNode } from '../types';
 import { Counter, omit } from './index';
 
+export type SortKey = 'name' | string;
+
 const collator = new Intl.Collator();
 
-export function compareNodesByNameButFolderFirst(a: MinimalFileSystemNode, b: MinimalFileSystemNode) {
+export function compareByName(a: MinimalFileSystemNode, b: MinimalFileSystemNode) {
+  return collator.compare(a.name, b.name);
+}
+
+export function compareNodesByNameButFolderFirst<T extends MinimalFileSystemNode>(a: T, b: T) {
+  return compareNodesButFolderFirst(compareByName, a, b);
+}
+
+export function compareNodesButFolderFirst<T extends MinimalFileSystemNode>(
+  compareFunction: (a: T, b: T) => number,
+  a: T,
+  b: T,
+) {
   if (a.children && !b.children) {
     return -1;
   } else if (!a.children && b.children) {
     return 1;
   } else {
-    // TODO: Investigate whether localeCompare or collator are faster in reality.
-    // return a.name.localeCompare(b.name);
-    return collator.compare(a.name, b.name);
+    return compareFunction(a, b);
   }
 }
 

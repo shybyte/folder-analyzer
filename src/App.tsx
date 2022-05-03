@@ -13,7 +13,10 @@ import { reReadFolder } from './read-folder';
 import { aggregateMetrics, AggregationMethod } from './metrics/aggregrate';
 import { FileCountMetricAnalyzer } from './metrics/file-count-metric-analyzer';
 import { SimpleSelect } from './components/SimpleSelect';
+import { SortKey } from './utils/tree';
 
+/* eslint-disable max-lines*/
+// eslint-disable-next-line max-lines-per-function,max-statements
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
   recordMetric('prepare-data-loading');
@@ -22,6 +25,7 @@ const App: Component = () => {
   const [metricsAnalysis, setMetricsAnalysis] = createSignal<FolderMetricsAnalysis>({});
   const [getSelectedMetric, setSelectedMetric] = createSignal<MetricName>(FILE_SIZE_METRIC);
   const [getSelectedAggregationMethod, setSelectedAggregationMethod] = createSignal(AggregationMethod.Sum);
+  const [getSortKey, setSortKey] = createSignal<SortKey>('name');
 
   const analyzers = [new FileSizeMetricAnalyzer(), new FileCountMetricAnalyzer()];
 
@@ -97,10 +101,17 @@ const App: Component = () => {
         selectedValue={getSelectedMetric()}
         values={Object.keys(metricsAnalysis())}
       ></SimpleSelect>
+
       <SimpleSelect
         setSelectedValue={setSelectedAggregationMethod}
         selectedValue={getSelectedAggregationMethod()}
         values={Object.values(AggregationMethod)}
+      ></SimpleSelect>
+
+      <SimpleSelect
+        setSelectedValue={setSortKey}
+        selectedValue={getSortKey()}
+        values={['name', ...Object.keys(aggregatedMetrics())]}
       ></SimpleSelect>
 
       <Show when={getRootFolder()}>
@@ -108,6 +119,7 @@ const App: Component = () => {
           root={getRootFolder()!}
           metrics={aggregatedMetrics()}
           selectedMetric={getSelectedMetric()}
+          sortKey={getSortKey()}
         />
       </Show>
     </div>
