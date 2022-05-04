@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal, Match, Switch } from 'solid-js';
 import styles from './App.module.scss';
 import { FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/FolderNestedListView';
@@ -14,18 +14,27 @@ import { aggregateMetrics, AggregationMethod } from './metrics/aggregrate';
 import { FileCountMetricAnalyzer } from './metrics/file-count-metric-analyzer';
 import { SimpleSelect } from './components/SimpleSelect';
 import { SortKey } from './utils/tree';
+import { useSearchParams } from 'solid-app-router';
+import { SunburstChart } from './components/sunburst-chart/SunburstChart';
 
 /* eslint-disable max-lines*/
+
+const TREE_BROWSER_SEARCH_PARAM = 'treeBrowser';
+
 // eslint-disable-next-line max-lines-per-function,max-statements
 const App: Component = () => {
   sendMetricIfConfigured('load-app', performance.now());
   recordMetric('prepare-data-loading');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [getRootFolderHandle, setRootFolderHandle] = createSignal<FileSystemDirectoryHandle>();
   const [getRootFolder, setRootFolder] = createSignal<FileSystemNode>();
   const [metricsAnalysis, setMetricsAnalysis] = createSignal<FolderMetricsAnalysis>({});
   const [getSelectedMetric, setSelectedMetric] = createSignal<MetricName>(FILE_SIZE_METRIC);
   const [getSelectedAggregationMethod, setSelectedAggregationMethod] = createSignal(AggregationMethod.Sum);
   const [getSortKey, setSortKey] = createSignal<SortKey>('name');
+
+  const getSelectedTreeBrowser = () =>
+    (searchParams[TREE_BROWSER_SEARCH_PARAM] ?? TreeBrowserComponent.Tree) as TreeBrowserComponent;
 
   const analyzers = [new FileSizeMetricAnalyzer(), new FileCountMetricAnalyzer()];
 
@@ -114,16 +123,34 @@ const App: Component = () => {
         values={['name', ...Object.keys(aggregatedMetrics())]}
       ></SimpleSelect>
 
-      <Show when={getRootFolder()}>
-        <FolderNestedListView
-          root={getRootFolder()!}
-          metrics={aggregatedMetrics()}
-          selectedMetric={getSelectedMetric()}
-          sortKey={getSortKey()}
-        />
-      </Show>
+      <SimpleSelect
+        setSelectedValue={(newValue) => {
+          setSearchParams({ [TREE_BROWSER_SEARCH_PARAM]: newValue });
+        }}
+        selectedValue={getSelectedTreeBrowser()}
+        values={Object.values(TreeBrowserComponent)}
+      ></SimpleSelect>
+
+      <Switch>
+        <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Tree}>
+          <FolderNestedListView
+            root={getRootFolder()!}
+            metrics={aggregatedMetrics()}
+            selectedMetric={getSelectedMetric()}
+            sortKey={getSortKey()}
+          />
+        </Match>
+        <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Sunburst}>
+          <SunburstChart />
+        </Match>
+      </Switch>
     </div>
   );
 };
+
+enum TreeBrowserComponent {
+  Tree = 'Tree',
+  Sunburst = 'Sunburst',
+}
 
 export default App;
