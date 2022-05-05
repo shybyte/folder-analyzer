@@ -1,7 +1,7 @@
 import { Component, createEffect, createMemo, createSignal, Match, Switch } from 'solid-js';
 import styles from './App.module.scss';
 import { FolderPicker } from './components/common/FolderPicker';
-import { FolderNestedListView } from './components/FolderNestedListView';
+import { FolderNestedListView } from './components/tree-view/FolderNestedListView';
 import { PerformanceMetricDataPoint, recordMetric, sendMetricIfConfigured } from './utils/performance';
 import { FileSystemNode } from './types';
 import { analyzeMetrics } from './metrics/analyze-metrics';
@@ -12,7 +12,7 @@ import { readData, storeData } from './db/datastore';
 import { reReadFolder } from './read-folder';
 import { aggregateMetrics, AggregationMethod } from './metrics/aggregrate';
 import { FileCountMetricAnalyzer } from './metrics/file-count-metric-analyzer';
-import { SimpleSelect } from './components/SimpleSelect';
+import { SimpleSelect } from './components/common/SimpleSelect';
 import { SortKey } from './utils/tree';
 import { useSearchParams } from 'solid-app-router';
 import { SunburstChart } from './components/sunburst-chart/SunburstChart';

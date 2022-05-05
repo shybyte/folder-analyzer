@@ -1,6 +1,6 @@
 import { ROOT_ID } from '@cypress/mount-utils';
 import { render } from 'solid-js/web';
-import { FolderNestedListView } from '../FolderNestedListView';
+import { FolderNestedListView } from '../tree-view/FolderNestedListView';
 import { createDummyFolderTree } from '../../utils/dummy-data';
 import { Counter } from '../../utils';
 
