@@ -20,6 +20,7 @@ export function createSunburstChart(props: SunburstChartProps) {
   const { width, height } = props.canvas;
 
   const renderedChartNodeById = new Map<string, RenderedChartNode>();
+  console.log('renderedChartNodeById:', renderedChartNodeById);
 
   // https://www.codeblocq.com/2016/04/Create-a-Pie-Chart-with-HTML5-canvas/
   // eslint-disable-next-line max-statements
@@ -44,11 +45,11 @@ export function createSunburstChart(props: SunburstChartProps) {
       ctx.stroke();
       currentStartAngle = currentEndAngle;
     }
-    console.log('renderedChartNodeById:', renderedChartNodeById);
+    // console.log('renderedChartNodeById:', renderedChartNodeById);
   }
 
-  props.canvas.addEventListener('mousemove', (ev) => {
-    console.log('ev.x', ev.offsetX, ev.offsetY);
+  props.canvas.addEventListener('mousemove', (_ev) => {
+    // console.log('ev.x', ev.offsetX, ev.offsetY);
     if (props.onHover) {
       props.onHover(props.data);
     }

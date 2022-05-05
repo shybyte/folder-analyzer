@@ -141,7 +141,7 @@ const App: Component = () => {
           />
         </Match>
         <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Sunburst}>
-          <SunburstChart />
+          <SunburstChart root={getRootFolder()!} metrics={aggregatedMetrics()} selectedMetric={getSelectedMetric()} />
         </Match>
       </Switch>
     </div>
