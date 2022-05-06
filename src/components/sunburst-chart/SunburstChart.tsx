@@ -13,9 +13,10 @@ interface SunburstChartProps {
 export function SunburstChart(props: SunburstChartProps) {
   let canvasElement!: HTMLCanvasElement;
 
-  function createChartTree(node: FileSystemNode): ChartTreeNode {
+  function createChartTree(node: FileSystemNode): ChartTreeNode<FileSystemNode> {
     return {
-      id: node.id.toString(),
+      id: node.name + '-' + node.id.toString(),
+      ref: node,
       name: node.name,
       color: '#f00',
       value: props.metrics[props.selectedMetric]?.valueByFile[node.id] ?? 0,
@@ -33,9 +34,9 @@ export function SunburstChart(props: SunburstChartProps) {
     createSunburstChart({
       canvas: canvasElement,
       data: chartTree,
-      // onHover(node) {
-      //   // console.log('node', node);
-      // },
+      onClick(node) {
+        console.log('clicked Node', node.ref);
+      },
     });
     console.timeEnd('createSunburstChart');
   });

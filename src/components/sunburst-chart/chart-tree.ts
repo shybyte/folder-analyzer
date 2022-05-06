@@ -1,14 +1,15 @@
 import { random, sum } from './utils';
 
-export type ChartTreeNode = {
+export type ChartTreeNode<T> = {
   id: string;
+  ref: T;
   name: string;
   value: number;
-  children: ChartTreeNode[];
+  children: ChartTreeNode<T>[];
   color: string;
 };
 
-export function createRandomChartTree(breadth: number, depth: number, name = '/root'): ChartTreeNode {
+export function createRandomChartTree(breadth: number, depth: number, name = '/root'): ChartTreeNode<string> {
   const isLeaf = depth === 0;
   const children = isLeaf
     ? []
@@ -16,6 +17,7 @@ export function createRandomChartTree(breadth: number, depth: number, name = '/r
 
   return {
     id: name,
+    ref: name,
     name: name,
     children: children,
     value: isLeaf ? Math.round(random(10) + 1) : sum(children, (it) => it.value),
