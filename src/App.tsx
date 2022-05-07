@@ -90,61 +90,60 @@ const App: Component = () => {
   });
 
   return (
-    <div class={styles.app}>
-      <FolderPicker
-        onFolderPicked={(folder) => {
-          void onFolderPicked(folder);
-        }}
-      />
-      <button
-        onClick={() => {
-          void analyze();
-        }}
-        disabled={!getRootFolder()}
-      >
-        Analyze
-      </button>
-
-      <SimpleSelect
-        setSelectedValue={setSelectedMetric}
-        selectedValue={getSelectedMetric()}
-        values={Object.keys(metricsAnalysis())}
-      ></SimpleSelect>
-
-      <SimpleSelect
-        setSelectedValue={setSelectedAggregationMethod}
-        selectedValue={getSelectedAggregationMethod()}
-        values={Object.values(AggregationMethod)}
-      ></SimpleSelect>
-
-      <SimpleSelect
-        setSelectedValue={setSortKey}
-        selectedValue={getSortKey()}
-        values={['name', ...Object.keys(aggregatedMetrics())]}
-      ></SimpleSelect>
-
-      <SimpleSelect
-        setSelectedValue={(newValue) => {
-          setSearchParams({ [TREE_BROWSER_SEARCH_PARAM]: newValue });
-        }}
-        selectedValue={getSelectedTreeBrowser()}
-        values={Object.values(TreeBrowserComponent)}
-      ></SimpleSelect>
-
-      <Switch>
-        <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Tree}>
-          <FolderNestedListView
-            root={getRootFolder()!}
-            metrics={aggregatedMetrics()}
-            selectedMetric={getSelectedMetric()}
-            sortKey={getSortKey()}
-          />
-        </Match>
-        <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Sunburst}>
-          <SunburstChart root={getRootFolder()!} metrics={aggregatedMetrics()} selectedMetric={getSelectedMetric()} />
-        </Match>
-      </Switch>
-    </div>
+    <section class={styles.app}>
+      <header>
+        <FolderPicker
+          onFolderPicked={(folder) => {
+            void onFolderPicked(folder);
+          }}
+        />
+        <button
+          onClick={() => {
+            void analyze();
+          }}
+          disabled={!getRootFolder()}
+        >
+          Analyze
+        </button>
+        <SimpleSelect
+          setSelectedValue={setSelectedMetric}
+          selectedValue={getSelectedMetric()}
+          values={Object.keys(metricsAnalysis())}
+        ></SimpleSelect>
+        <SimpleSelect
+          setSelectedValue={setSelectedAggregationMethod}
+          selectedValue={getSelectedAggregationMethod()}
+          values={Object.values(AggregationMethod)}
+        ></SimpleSelect>
+        <SimpleSelect
+          setSelectedValue={setSortKey}
+          selectedValue={getSortKey()}
+          values={['name', ...Object.keys(aggregatedMetrics())]}
+        ></SimpleSelect>
+        <SimpleSelect
+          setSelectedValue={(newValue) => {
+            setSearchParams({ [TREE_BROWSER_SEARCH_PARAM]: newValue });
+          }}
+          selectedValue={getSelectedTreeBrowser()}
+          values={Object.values(TreeBrowserComponent)}
+        ></SimpleSelect>
+      </header>
+      <div class={styles.main}>
+        <Switch>
+          <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Tree}>
+            <FolderNestedListView
+              root={getRootFolder()!}
+              metrics={aggregatedMetrics()}
+              selectedMetric={getSelectedMetric()}
+              sortKey={getSortKey()}
+            />
+          </Match>
+          <Match when={getRootFolder() && getSelectedTreeBrowser() === TreeBrowserComponent.Sunburst}>
+            <SunburstChart root={getRootFolder()!} metrics={aggregatedMetrics()} selectedMetric={getSelectedMetric()} />
+          </Match>
+        </Switch>
+      </div>
+    </section>
   );
 };
 

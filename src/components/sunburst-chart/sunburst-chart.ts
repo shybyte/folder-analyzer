@@ -1,4 +1,4 @@
-import { ChartTreeNode } from './chart-tree';
+import { ChartTreeNode, getHeight } from './chart-tree';
 
 interface SunburstChartProps<T> {
   canvas: HTMLCanvasElement;
@@ -18,6 +18,8 @@ export type NumberRange = {
   end: number;
 };
 
+const PADDING = 10;
+
 export function createSunburstChart<T>(props: SunburstChartProps<T>) {
   const ctx = props.canvas.getContext('2d')!;
   const { width, height } = props.canvas;
@@ -26,7 +28,10 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
 
   const centerX = width / 2;
   const centerY = height / 2;
-  const ringRadius = 100;
+
+  const treeHeight = getHeight(props.data);
+  console.log('treeHeight:', treeHeight);
+  const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (treeHeight - 1);
 
   // https://www.codeblocq.com/2016/04/Create-a-Pie-Chart-with-HTML5-canvas/
   // eslint-disable-next-line max-statements
@@ -55,19 +60,22 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
     }
   }
 
-  props.canvas.addEventListener('mousemove', (ev) => {
+  function onMouseMove(ev: MouseEvent) {
     const renderedNode = findNodeForMouseEvent(ev);
     if (renderedNode && props.onHover) {
       props.onHover(renderedNode.node);
     }
-  });
+  }
 
-  props.canvas.addEventListener('click', (ev) => {
+  function onClick(ev: MouseEvent) {
     const renderedNode = findNodeForMouseEvent(ev);
     if (renderedNode && props.onClick) {
       props.onClick(renderedNode.node);
     }
-  });
+  }
+
+  props.canvas.addEventListener('mousemove', onMouseMove);
+  props.canvas.addEventListener('click', onClick);
 
   function findNodeForMouseEvent(mouseEvent: MouseEvent) {
     const dx = mouseEvent.offsetY - centerY;
@@ -77,7 +85,14 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
     return findNode(radius, angleRad, renderedChartNodeById);
   }
 
-  renderSunburst(props.data);
+  renderSunburst(props.data, ringRadius);
+
+  return {
+    cleanUp: () => {
+      props.canvas.removeEventListener('mousemove', onMouseMove);
+      props.canvas.removeEventListener('click', onClick);
+    },
+  };
 }
 
 function calculateAngle(x: number, y: number): number {

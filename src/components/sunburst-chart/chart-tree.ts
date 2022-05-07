@@ -24,3 +24,7 @@ export function createRandomChartTree(breadth: number, depth: number, name = '/r
     color: `rgb(${random(256)},${random(256)},${random(256)})`,
   };
 }
+
+export function getHeight(tree: ChartTreeNode<unknown>): number {
+  return Math.max(0, ...tree.children.map((it) => getHeight(it))) + 1;
+}

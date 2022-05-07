@@ -1,6 +1,7 @@
+import styles from './SunburstChart.module.scss';
 import { ChartTreeNode } from './chart-tree';
 import { createSunburstChart } from './sunburst-chart';
-import { createEffect } from 'solid-js';
+import { createEffect, onCleanup, onMount } from 'solid-js';
 import { FileSystemNode } from '../../types';
 import { FolderMetricsAnalysis, MetricName } from '../../metrics/types';
 
@@ -11,7 +12,10 @@ interface SunburstChartProps {
 }
 
 export function SunburstChart(props: SunburstChartProps) {
+  let containerElement!: HTMLDivElement;
   let canvasElement!: HTMLCanvasElement;
+  let resizeObserver: ResizeObserver;
+  let sunburstChart: { cleanUp: () => void };
 
   function createChartTree(node: FileSystemNode): ChartTreeNode<FileSystemNode> {
     return {
@@ -24,14 +28,17 @@ export function SunburstChart(props: SunburstChartProps) {
     };
   }
 
-  createEffect(() => {
+  function render() {
     console.time('createChartTree');
     const chartTree = createChartTree(props.root);
     console.timeEnd('createChartTree');
     console.log('chartTree', chartTree);
 
     console.time('createSunburstChart');
-    createSunburstChart({
+    if (sunburstChart) {
+      sunburstChart.cleanUp();
+    }
+    sunburstChart = createSunburstChart({
       canvas: canvasElement,
       data: chartTree,
       onClick(node) {
@@ -39,11 +46,31 @@ export function SunburstChart(props: SunburstChartProps) {
       },
     });
     console.timeEnd('createSunburstChart');
+  }
+
+  onCleanup(() => {
+    console.log('cleanUp');
+    sunburstChart.cleanUp();
+  });
+
+  onMount(() => {
+    resizeObserver = new ResizeObserver(() => {
+      canvasElement.width = containerElement.offsetWidth;
+      canvasElement.height = containerElement.offsetHeight;
+      if (canvasElement.width > 20 && canvasElement.height > 0) {
+        render();
+      }
+    });
+    resizeObserver.observe(containerElement);
+  });
+
+  createEffect(() => {
+    render();
   });
 
   return (
-    <div>
-      <canvas ref={canvasElement} width={500} height={500}></canvas>
+    <div ref={containerElement} class={styles.sunburstChart}>
+      <canvas ref={canvasElement}></canvas>
     </div>
   );
 }
