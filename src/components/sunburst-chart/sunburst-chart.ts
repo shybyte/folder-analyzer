@@ -1,4 +1,5 @@
 import { ChartTreeNode, getHeight } from './chart-tree';
+import { Pos2D } from '../../types';
 
 interface SunburstChartProps<T> {
   canvas: HTMLCanvasElement;
@@ -23,15 +24,9 @@ const PADDING = 10;
 export function createSunburstChart<T>(props: SunburstChartProps<T>) {
   const ctx = props.canvas.getContext('2d')!;
   const { width, height } = props.canvas;
-
   const renderedChartNodeById = new Map<string, RenderedChartNode<T>>();
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  const treeHeight = getHeight(props.data);
-  console.log('treeHeight:', treeHeight);
-  const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (treeHeight - 1);
+  const center: Pos2D = { x: width / 2, y: height / 2 };
+  const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (getHeight(props.data) - 1);
 
   // https://www.codeblocq.com/2016/04/Create-a-Pie-Chart-with-HTML5-canvas/
   // eslint-disable-next-line max-statements
@@ -45,15 +40,15 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
       const currentEndAngle = currentStartAngle + angleDelta;
       renderSunburst(child, radius + ringRadius, currentStartAngle, currentEndAngle);
       ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
+      ctx.moveTo(center.x, center.y);
       ctx.fillStyle = child.color;
-      ctx.arc(centerX, centerY, radius, currentStartAngle, currentEndAngle);
+      ctx.arc(center.x, center.y, radius, currentStartAngle, currentEndAngle);
       renderedChartNodeById.set(child.id, {
         node: child,
         angleRange: { start: currentStartAngle, end: currentEndAngle },
         radiusRange: { start: radius - ringRadius, end: radius },
       });
-      ctx.lineTo(centerX, centerY);
+      ctx.lineTo(center.x, center.y);
       ctx.fill();
       ctx.stroke();
       currentStartAngle = currentEndAngle;
@@ -74,16 +69,16 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
     }
   }
 
-  props.canvas.addEventListener('mousemove', onMouseMove);
-  props.canvas.addEventListener('click', onClick);
-
   function findNodeForMouseEvent(mouseEvent: MouseEvent) {
-    const dx = mouseEvent.offsetY - centerY;
-    const dy = mouseEvent.offsetX - centerX;
+    const dx = mouseEvent.offsetX - center.x;
+    const dy = mouseEvent.offsetY - center.y;
     const angleRad = calculateAngle(dx, dy);
     const radius = Math.sqrt(dx ** 2 + dy ** 2);
     return findNode(radius, angleRad, renderedChartNodeById);
   }
+
+  props.canvas.addEventListener('mousemove', onMouseMove);
+  props.canvas.addEventListener('click', onClick);
 
   renderSunburst(props.data, ringRadius);
 

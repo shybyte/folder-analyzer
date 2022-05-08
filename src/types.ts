@@ -18,3 +18,8 @@ export interface FileSystemNodeWithFileHandle {
   name: string;
   handle: FileSystemFileHandle;
 }
+
+export interface Pos2D {
+  x: number;
+  y: number;
+}
