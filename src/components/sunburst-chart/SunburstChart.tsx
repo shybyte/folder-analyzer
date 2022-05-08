@@ -1,7 +1,7 @@
 import styles from './SunburstChart.module.scss';
 import { ChartTreeNode } from './chart-tree';
 import { createSunburstChart } from './sunburst-chart';
-import { createEffect, onCleanup, onMount } from 'solid-js';
+import { createEffect, onCleanup } from 'solid-js';
 import { FileSystemNode } from '../../types';
 import { FolderMetricsAnalysis, MetricName } from '../../metrics/types';
 
@@ -29,6 +29,13 @@ export function SunburstChart(props: SunburstChartProps) {
   }
 
   function render() {
+    canvasElement.width = containerElement.offsetWidth;
+    canvasElement.height = containerElement.offsetHeight;
+
+    if (canvasElement.width < 20 && canvasElement.height < 20) {
+      return;
+    }
+
     console.time('createChartTree');
     const chartTree = createChartTree(props.root);
     console.timeEnd('createChartTree');
@@ -49,23 +56,15 @@ export function SunburstChart(props: SunburstChartProps) {
   }
 
   onCleanup(() => {
-    console.log('cleanUp');
     sunburstChart.cleanUp();
-  });
-
-  onMount(() => {
-    resizeObserver = new ResizeObserver(() => {
-      canvasElement.width = containerElement.offsetWidth;
-      canvasElement.height = containerElement.offsetHeight;
-      if (canvasElement.width > 20 && canvasElement.height > 0) {
-        render();
-      }
-    });
-    resizeObserver.observe(containerElement);
   });
 
   createEffect(() => {
     render();
+
+    if (!resizeObserver) {
+      resizeObserver = new ResizeObserver(render);
+    }
   });
 
   return (

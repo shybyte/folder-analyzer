@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createSignal, Match, Switch } from 'solid-js';
+import { batch, Component, createEffect, createMemo, createSignal, Match, Switch } from 'solid-js';
 import styles from './App.module.scss';
 import { FolderPicker } from './components/common/FolderPicker';
 import { FolderNestedListView } from './components/tree-view/FolderNestedListView';
@@ -72,9 +72,11 @@ const App: Component = () => {
     const restoredData = await readData();
     if (restoredData) {
       recordMetric('render-app');
-      setRootFolder(restoredData.rootFolder);
-      setRootFolderHandle(restoredData.rootFolderHandle);
-      setMetricsAnalysis(restoredData.rootFolderMetrics);
+      batch(() => {
+        setRootFolder(restoredData.rootFolder);
+        setRootFolderHandle(restoredData.rootFolderHandle);
+        setMetricsAnalysis(restoredData.rootFolderMetrics);
+      });
       recordMetric('layout-app');
       setTimeout(() => {
         recordMetric();
