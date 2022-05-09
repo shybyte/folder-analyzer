@@ -55,6 +55,17 @@ export function SunburstChart(props: SunburstChartProps) {
     console.timeEnd('createSunburstChart');
   }
 
+  function onResize() {
+    if (
+      containerElement.offsetWidth !== canvasElement.width ||
+      containerElement.offsetHeight !== canvasElement.height
+    ) {
+      canvasElement.width = containerElement.offsetWidth;
+      canvasElement.height = containerElement.offsetHeight;
+      render();
+    }
+  }
+
   onCleanup(() => {
     sunburstChart.cleanUp();
   });
@@ -63,7 +74,8 @@ export function SunburstChart(props: SunburstChartProps) {
     render();
 
     if (!resizeObserver) {
-      resizeObserver = new ResizeObserver(render);
+      resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(containerElement);
     }
   });
 
