@@ -60,8 +60,6 @@ export function SunburstChart(props: SunburstChartProps) {
       containerElement.offsetWidth !== canvasElement.width ||
       containerElement.offsetHeight !== canvasElement.height
     ) {
-      canvasElement.width = containerElement.offsetWidth;
-      canvasElement.height = containerElement.offsetHeight;
       render();
     }
   }
