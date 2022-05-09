@@ -1,8 +1,10 @@
 import { random, sum } from './utils';
+import { max } from '../../utils/array';
 
 export type ChartTreeNode<T> = {
   id: string;
   ref: T;
+  height: number;
   name: string;
   value: number;
   children: ChartTreeNode<T>[];
@@ -19,12 +21,9 @@ export function createRandomChartTree(breadth: number, depth: number, name = '/r
     id: name,
     ref: name,
     name: name,
+    height: 1 + max(children, (child) => child.height),
     children: children,
     value: isLeaf ? Math.round(random(10) + 1) : sum(children, (it) => it.value),
     color: `rgb(${random(256)},${random(256)},${random(256)})`,
   };
-}
-
-export function getHeight(tree: ChartTreeNode<unknown>): number {
-  return Math.max(0, ...tree.children.map((it) => getHeight(it))) + 1;
 }

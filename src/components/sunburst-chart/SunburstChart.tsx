@@ -1,9 +1,10 @@
 import styles from './SunburstChart.module.scss';
 import { ChartTreeNode } from './chart-tree';
 import { createSunburstChart } from './sunburst-chart';
-import { createEffect, onCleanup } from 'solid-js';
+import { createEffect, createMemo, onCleanup } from 'solid-js';
 import { FileSystemNode } from '../../types';
 import { FolderMetricsAnalysis, MetricName } from '../../metrics/types';
+import { max } from '../../utils/array';
 
 interface SunburstChartProps {
   root: FileSystemNode;
@@ -18,15 +19,19 @@ export function SunburstChart(props: SunburstChartProps) {
   let sunburstChart: { cleanUp: () => void };
 
   function createChartTree(node: FileSystemNode): ChartTreeNode<FileSystemNode> {
+    const children = node.children?.map(createChartTree) ?? [];
     return {
       id: node.name + '-' + node.id.toString(),
       ref: node,
+      height: 1 + max(children, (child) => child.height),
       name: node.name,
       color: '#f00',
       value: props.metrics[props.selectedMetric]?.valueByFile[node.id] ?? 0,
-      children: node.children?.map(createChartTree) ?? [],
+      children: children,
     };
   }
+
+  const createChartTreeMemoized = createMemo(() => createChartTree(props.root));
 
   function render() {
     canvasElement.width = containerElement.offsetWidth;
@@ -37,7 +42,7 @@ export function SunburstChart(props: SunburstChartProps) {
     }
 
     console.time('createChartTree');
-    const chartTree = createChartTree(props.root);
+    const chartTree = createChartTreeMemoized();
     console.timeEnd('createChartTree');
     console.log('chartTree', chartTree);
 

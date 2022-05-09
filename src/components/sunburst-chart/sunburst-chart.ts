@@ -1,4 +1,4 @@
-import { ChartTreeNode, getHeight } from './chart-tree';
+import { ChartTreeNode } from './chart-tree';
 import { Pos2D } from '../../types';
 
 interface SunburstChartProps<T> {
@@ -26,7 +26,7 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
   const { width, height } = props.canvas;
   const renderedChartNodeById = new Map<string, RenderedChartNode<T>>();
   const center: Pos2D = { x: width / 2, y: height / 2 };
-  const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (getHeight(props.data) - 1);
+  const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (props.data.height - 1);
 
   // https://www.codeblocq.com/2016/04/Create-a-Pie-Chart-with-HTML5-canvas/
   // eslint-disable-next-line max-statements
@@ -38,19 +38,21 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
     for (const child of tree.children) {
       const angleDelta = (child.value / tree.value) * angleRange;
       const currentEndAngle = currentStartAngle + angleDelta;
-      renderSunburst(child, radius + ringRadius, currentStartAngle, currentEndAngle);
-      ctx.beginPath();
-      ctx.moveTo(center.x, center.y);
-      ctx.fillStyle = child.color;
-      ctx.arc(center.x, center.y, radius, currentStartAngle, currentEndAngle);
-      renderedChartNodeById.set(child.id, {
-        node: child,
-        angleRange: { start: currentStartAngle, end: currentEndAngle },
-        radiusRange: { start: radius - ringRadius, end: radius },
-      });
-      ctx.lineTo(center.x, center.y);
-      ctx.fill();
-      ctx.stroke();
+      if (currentEndAngle - currentStartAngle > 0.001) {
+        renderSunburst(child, radius + ringRadius, currentStartAngle, currentEndAngle);
+        ctx.beginPath();
+        ctx.moveTo(center.x, center.y);
+        ctx.fillStyle = child.color;
+        ctx.arc(center.x, center.y, radius, currentStartAngle, currentEndAngle);
+        renderedChartNodeById.set(child.id, {
+          node: child,
+          angleRange: { start: currentStartAngle, end: currentEndAngle },
+          radiusRange: { start: radius - ringRadius, end: radius },
+        });
+        ctx.lineTo(center.x, center.y);
+        ctx.fill();
+        ctx.stroke();
+      }
       currentStartAngle = currentEndAngle;
     }
   }
