@@ -1,5 +1,5 @@
 import { sortRecursivelyByNameButFolderFirst } from '../tree';
-import { MinimalFileSystemNode } from '../../types';
+import { FileSystemNode, MinimalFileSystemNode } from '../../types';
 
 describe('tree', () => {
   it('sortRecursivelyByNameButFolderFirst', () => {
@@ -36,7 +36,7 @@ describe('tree', () => {
         },
       ],
     };
-    const sorted = sortRecursivelyByNameButFolderFirst(tree);
+    const sorted = sortRecursivelyByNameButFolderFirst(tree as FileSystemNode);
     expect(sorted).to.deep.equal({
       name: 'root',
       children: [

@@ -6,9 +6,8 @@ export interface MinimalFileSystemNode {
   children?: MinimalFileSystemNode[];
 }
 
-export interface FileSystemNode {
+export interface FileSystemNode extends MinimalFileSystemNode {
   id: number;
-  name: string;
   handle?: FileSystemDirectoryHandle | FileSystemFileHandle;
   children?: FileSystemNode[];
 }

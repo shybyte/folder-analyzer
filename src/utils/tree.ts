@@ -1,11 +1,16 @@
 import { FileSystemNode, MinimalFileSystemNode } from '../types';
 import { Counter, omit } from './index';
+import { FolderMetricsAnalysis } from '../metrics/types';
 
 export type SortKey = 'name' | string;
 
 const collator = new Intl.Collator();
 
-export function compareByName(a: MinimalFileSystemNode, b: MinimalFileSystemNode) {
+interface HasName {
+  name: string;
+}
+
+export function compareByName(a: HasName, b: HasName) {
   return collator.compare(a.name, b.name);
 }
 
@@ -27,21 +32,27 @@ export function compareNodesButFolderFirst<T extends MinimalFileSystemNode>(
   }
 }
 
-export function sortRecursivelyByNameButFolderFirst(tree: MinimalFileSystemNode): MinimalFileSystemNode {
+export function sortRecursivelyByNameButFolderFirst(tree: FileSystemNode): FileSystemNode {
   return sortRecursively(tree, compareNodesByNameButFolderFirst);
 }
 
 export function sortRecursively(
-  tree: MinimalFileSystemNode,
-  compare: (a: MinimalFileSystemNode, b: MinimalFileSystemNode) => number,
-): MinimalFileSystemNode {
+  tree: FileSystemNode,
+  compare: (a: FileSystemNode, b: FileSystemNode) => number,
+): FileSystemNode {
   if (!tree.children || tree.children.length === 0) {
     return tree;
-  } else
-    return {
-      ...tree,
+  } else {
+    const result: FileSystemNode = {
+      id: tree.id,
+      name: tree.name,
       children: [...tree.children].sort(compare).map((node) => sortRecursively(node, compare)),
     };
+    if (tree.handle) {
+      result.handle = tree.handle;
+    }
+    return result;
+  }
 }
 
 export function forEachTreeNode(tree: FileSystemNode, callback: (node: FileSystemNode) => void) {
@@ -67,4 +78,25 @@ export function addIds(tree: MinimalFileSystemNode, idCounter = new Counter()): 
     result.children = tree.children.map((child) => addIds(child, idCounter));
   }
   return result;
+}
+
+interface HasNameAndNumericId {
+  name: string;
+  id: number;
+}
+
+export function createCompareBySortKey<T extends HasNameAndNumericId>(
+  sortKey: SortKey,
+  metrics: FolderMetricsAnalysis,
+): (a: T, b: T) => number {
+  if (sortKey === 'name') {
+    return compareByName;
+  } else {
+    const metricAnalysis = metrics[sortKey];
+    return (a1, b1) => {
+      const metricValue1 = metricAnalysis?.valueByFile[a1.id] ?? 0;
+      const metricValue2 = metricAnalysis?.valueByFile[b1.id] ?? 0;
+      return metricValue2 - metricValue1;
+    };
+  }
 }

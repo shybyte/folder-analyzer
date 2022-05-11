@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import styles from './FolderNestedListView.module.scss';
-import { compareByName, compareNodesButFolderFirst, SortKey } from '../../utils/tree';
+import { compareNodesButFolderFirst, createCompareBySortKey, SortKey } from '../../utils/tree';
 import { sortByCompare } from '../../utils/array';
 import { FileSystemNode } from '../../types';
 import { FolderMetricsAnalysis, MetricName } from '../../metrics/types';
@@ -27,22 +27,6 @@ export function FolderNestedListView(props: FolderNestedListViewProps) {
       />
     </div>
   );
-}
-
-function createCompareBySortKey(
-  sortKey: SortKey,
-  metrics: FolderMetricsAnalysis,
-): (a: FileSystemNode, b: FileSystemNode) => number {
-  if (sortKey === 'name') {
-    return compareByName;
-  } else {
-    const metricAnalysis = metrics[sortKey];
-    return (a1, b1) => {
-      const metricValue1 = metricAnalysis?.valueByFile[a1.id] ?? 0;
-      const metricValue2 = metricAnalysis?.valueByFile[b1.id] ?? 0;
-      return metricValue2 - metricValue1;
-    };
-  }
 }
 
 interface NodeViewProps {

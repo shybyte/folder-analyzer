@@ -6,13 +6,16 @@ import { FileSystemNode } from '../../types';
 import { FolderMetricsAnalysis, MetricName } from '../../metrics/types';
 import { max } from '../../utils/array';
 import { Tooltip } from './Tooltip';
+import { compareNodesButFolderFirst, createCompareBySortKey, SortKey, sortRecursively } from '../../utils/tree';
 
 interface SunburstChartProps {
   root: FileSystemNode;
   metrics: FolderMetricsAnalysis;
   selectedMetric: MetricName;
+  sortKey: SortKey;
 }
 
+// eslint-disable-next-line max-statements
 export function SunburstChart(props: SunburstChartProps) {
   let containerElement!: HTMLDivElement;
   let canvasElement!: HTMLCanvasElement;
@@ -33,10 +36,13 @@ export function SunburstChart(props: SunburstChartProps) {
     };
   }
 
-  const createChartTreeMemoized = createMemo(() => createChartTree(props.root));
+  const compareBySortKey = createMemo(() => createCompareBySortKey(props.sortKey, props.metrics));
+  const sortedTree = createMemo(() =>
+    sortRecursively(props.root, (a, b) => compareNodesButFolderFirst(compareBySortKey(), a, b)),
+  );
+  const createChartTreeMemoized = createMemo(() => createChartTree(sortedTree()));
 
   function onHover(node: ChartTreeNode<unknown> | undefined) {
-    // console.log('node:', node);
     setTooltip(node?.name);
   }
 
