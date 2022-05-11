@@ -1,10 +1,12 @@
 import { ChartTreeNode } from './chart-tree';
-import { Pos2D } from '../../types';
+import { NumberRange, Pos2D } from '../../types';
+import { drawCircleSlice } from './canvas';
+import { calculateAngle, isInRange } from '../../utils';
 
 interface SunburstChartProps<T> {
   canvas: HTMLCanvasElement;
-  onHover?: (chartTreeNode: ChartTreeNode<T>) => void;
-  onClick?: (chartTreeNode: ChartTreeNode<T>) => void;
+  onHover?: (chartTreeNode: ChartTreeNode<T> | undefined) => void;
+  onClick?: (chartTreeNode: ChartTreeNode<T> | undefined) => void;
   data: ChartTreeNode<T>;
 }
 
@@ -13,11 +15,6 @@ export interface RenderedChartNode<T> {
   radiusRange: NumberRange;
   angleRange: NumberRange;
 }
-
-export type NumberRange = {
-  start: number;
-  end: number;
-};
 
 const PADDING = 10;
 
@@ -29,10 +26,8 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
   const ringRadius = (Math.min(width / 2, height / 2) - PADDING) / (props.data.height - 1);
 
   // https://www.codeblocq.com/2016/04/Create-a-Pie-Chart-with-HTML5-canvas/
-  // eslint-disable-next-line max-statements
   function renderSunburst(tree: Readonly<ChartTreeNode<T>>, radius = 100, startAngle = 0, endAngle = 2 * Math.PI) {
     ctx.strokeStyle = '#fff';
-
     const angleRange = endAngle - startAngle;
     let currentStartAngle = startAngle;
     for (const child of tree.children) {
@@ -40,43 +35,35 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
       const currentEndAngle = currentStartAngle + angleDelta;
       if (currentEndAngle - currentStartAngle > 0.001) {
         renderSunburst(child, radius + ringRadius, currentStartAngle, currentEndAngle);
-        ctx.beginPath();
-        ctx.moveTo(center.x, center.y);
-        ctx.fillStyle = child.color;
-        ctx.arc(center.x, center.y, radius, currentStartAngle, currentEndAngle);
+        drawCircleSlice(ctx, center, { start: currentStartAngle, end: currentEndAngle }, radius, child.color);
         renderedChartNodeById.set(child.id, {
           node: child,
           angleRange: { start: currentStartAngle, end: currentEndAngle },
           radiusRange: { start: radius - ringRadius, end: radius },
         });
-        ctx.lineTo(center.x, center.y);
-        ctx.fill();
-        ctx.stroke();
       }
       currentStartAngle = currentEndAngle;
     }
   }
 
   function onMouseMove(ev: MouseEvent) {
-    const renderedNode = findNodeForMouseEvent(ev);
-    if (renderedNode && props.onHover) {
-      props.onHover(renderedNode.node);
+    if (props.onHover) {
+      props?.onHover(findNodeForMouseEvent(ev)?.node);
     }
   }
 
   function onClick(ev: MouseEvent) {
-    const renderedNode = findNodeForMouseEvent(ev);
-    if (renderedNode && props.onClick) {
-      props.onClick(renderedNode.node);
+    if (props.onClick) {
+      props.onClick(findNodeForMouseEvent(ev)?.node);
     }
   }
 
   function findNodeForMouseEvent(mouseEvent: MouseEvent) {
     const dx = mouseEvent.offsetX - center.x;
     const dy = mouseEvent.offsetY - center.y;
-    const angleRad = calculateAngle(dx, dy);
+    const angle = calculateAngle(dx, dy);
     const radius = Math.sqrt(dx ** 2 + dy ** 2);
-    return findNode(radius, angleRad, renderedChartNodeById);
+    return findNode(radius, angle, renderedChartNodeById);
   }
 
   props.canvas.addEventListener('mousemove', onMouseMove);
@@ -92,11 +79,6 @@ export function createSunburstChart<T>(props: SunburstChartProps<T>) {
   };
 }
 
-function calculateAngle(x: number, y: number): number {
-  const angleRadRaw = Math.atan2(x, y);
-  return angleRadRaw > 0 ? angleRadRaw : Math.PI * 2 + angleRadRaw;
-}
-
 function findNode<T>(
   radius: number,
   angle: number,
@@ -105,8 +87,4 @@ function findNode<T>(
   return [...renderedChartNodeById.values()].find(
     (it) => isInRange(angle, it.angleRange) && isInRange(radius, it.radiusRange),
   );
-}
-
-function isInRange(value: number, range: NumberRange) {
-  return range.start <= value && value <= range.end;
 }

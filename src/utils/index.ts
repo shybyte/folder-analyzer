@@ -1,3 +1,5 @@
+import { NumberRange } from '../types';
+
 export class Counter {
   #count: number;
 
@@ -47,4 +49,13 @@ export async function verifyPermission(fileHandle: FileSystemDirectoryHandle | F
   }
   // Request permission. If the user grants permission, return true.
   return (await fileHandle.requestPermission()) === 'granted';
+}
+
+export function isInRange(value: number, range: NumberRange) {
+  return range.start <= value && value <= range.end;
+}
+
+export function calculateAngle(x: number, y: number): number {
+  const angleRadRaw = Math.atan2(y, x);
+  return angleRadRaw > 0 ? angleRadRaw : Math.PI * 2 + angleRadRaw;
 }
