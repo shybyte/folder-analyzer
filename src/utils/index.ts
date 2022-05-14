@@ -59,3 +59,7 @@ export function calculateAngle(x: number, y: number): number {
   const angleRadRaw = Math.atan2(y, x);
   return angleRadRaw > 0 ? angleRadRaw : Math.PI * 2 + angleRadRaw;
 }
+
+export function middle(x: number, y: number) {
+  return (x + y) / 2;
+}

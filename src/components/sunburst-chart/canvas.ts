@@ -16,3 +16,25 @@ export function drawCircleSlice(
   ctx.fill();
   ctx.stroke();
 }
+
+// eslint-disable-next-line max-params
+export function renderTextRotatedAroundCenter(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  rotationCenter: Pos2D,
+  angle: number,
+  distanceToCenter: number,
+) {
+  ctx.save();
+  ctx.font = '12px sans-serif';
+  ctx.fillStyle = 'black';
+  ctx.translate(rotationCenter.x, rotationCenter.y);
+  ctx.rotate(angle);
+  ctx.translate(distanceToCenter, 0);
+  if (Math.PI / 2 < angle && angle < Math.PI * 1.5) {
+    ctx.scale(-1, -1);
+  }
+  ctx.textAlign = 'center';
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
